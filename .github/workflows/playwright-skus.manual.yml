@@ -1,4 +1,4 @@
-name: Test categories manually
+name: Manual - test skus
 on:
   workflow_dispatch:
     inputs:
