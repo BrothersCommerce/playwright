@@ -1,0 +1,26 @@
+{
+  "name": "playwright",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.47.2",
+    "@types/node": "^22.7.2"
+  },
+  "dependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@types/node-fetch": "^2.6.12",
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "fs-extra": "^11.2.0",
+    "node-fetch": "^3.3.2",
+    "node-html-parser": "^6.1.13",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "xlsx-js-style": "^1.2.0"
+  }
+}
