@@ -1,4 +1,4 @@
-name: CRON - automated tests
+name: Automated - CRON job
 on:
   workflow_dispatch
 jobs:
