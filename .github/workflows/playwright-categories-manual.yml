@@ -1,9 +1,28 @@
-name: Playwright Tests
+name: Test categories manually
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      targetCategory:
+        description: Choose 1 category to test
+        type: choice
+        options:
+        - Accessoarer
+        - Byxor
+        - Jackor & Rockar
+        - Jeans
+        - Kavajer
+        - Kostymbyxor
+        - Kostymvästar
+        - Flanell
+        - Shorts
+        - Skjortor
+        - Sweats
+        - T-shirts & Pikéer
+        - Tröjor
+        - Underkläder
+        - Koftor & cardigans
+        - Kostym
+        required: true
 jobs:
   test:
     timeout-minutes: 60
