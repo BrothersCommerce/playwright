@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { MagentoConfigurableProduct, MagentoSimpleProduct, MagentoStockSource, MagentoStockSourceResponse, RequestOptions } from '../../utils/types';
+import { ExtendenProduct, MagentoConfigurableProduct, MagentoSimpleProduct, MagentoStockSource, MagentoStockSourceResponse, RequestOptions } from '../../utils/types';
 
 type FilterCondition = 'eq' | 'finset' | 'from' | 'gt' | 'gteq' | 'in' | 'like' | 'lt' | 'lteq' | 'moreq' | 'neq' | 'nfinset' | 'nin' | 'nlike' | 'notnull' | 'null' | 'to';
 
@@ -123,18 +123,28 @@ export const magento = {
         const endpoint = `/products${filterQueryString}`;
 
         const fetchProductsWithFilter = (await request<{ items: MagentoConfigurableProduct[] }>(endpoint)).items;
-        const skusWithNoSimpleProducts = fetchProductsWithFilter.filter(product => product.extension_attributes.configurable_product_links && !product.extension_attributes.configurable_product_links.length);
-        const products = fetchProductsWithFilter.filter(product => product.extension_attributes.configurable_product_links && product.extension_attributes.configurable_product_links.length);
-        const { skus: fetchSimpleProducts } = (await magento.getSimpleProductsForAllSkus(products.map(product => product.sku)));
-        const extendedProducts: ({simpleProducts: string[], stock: { noWasteQty: number; inStoreQty: number }} & MagentoConfigurableProduct)[] = [];
 
-        console.log(`${products.length} to be extend with stocks and simple products for testing`);
-        for (let i = 0; i < products.length; i++) {
-            console.log(`${i + 1}/${products.length} extending sku ${products[i].sku}`);
-            const simpleProducts = (fetchSimpleProducts.find(simpleProduct => simpleProduct.parentSku === products[i].sku) ?? { simpleProductSkus: []}).simpleProductSkus;
+        const rnbLooks = fetchProductsWithFilter.filter(product => {
+            if (product.type_id === "rnblook" && product.custom_attributes.some(ca => ca.attribute_code === "product_key")) {
+                return product;
+            }
+    });
+
+        const skusWithNoSimpleProducts = fetchProductsWithFilter.filter(product => product.extension_attributes.configurable_product_links && !product.extension_attributes.configurable_product_links.length);
+
+        const productsWithSimpleProducts = fetchProductsWithFilter.filter(product => product.extension_attributes.configurable_product_links && product.extension_attributes.configurable_product_links.length);
+
+        const { skus: fetchSimpleProducts } = (await magento.getSimpleProductsForAllSkus(productsWithSimpleProducts.map(product => product.sku)));
+
+        const extendedProducts: ExtendenProduct[] = [];
+
+        console.log(`${productsWithSimpleProducts.length} skus to be extend with stocks and simple products for testing`);
+        for (let i = 0; i < productsWithSimpleProducts.length; i++) {
+            console.log(`${i + 1}/${productsWithSimpleProducts.length} - Extending SKU: ${productsWithSimpleProducts[i].sku}`);
+            const simpleProducts = (fetchSimpleProducts.find(simpleProduct => simpleProduct.parentSku === productsWithSimpleProducts[i].sku) ?? { simpleProductSkus: []}).simpleProductSkus;
             const stock = (await magento.getStockStatus(simpleProducts));
             extendedProducts.push({
-                ...products[i],
+                ...productsWithSimpleProducts[i],
                 simpleProducts,
                 stock
             });
@@ -142,8 +152,15 @@ export const magento = {
 
         const extendedProductsWithStock = extendedProducts.filter(ep => ep.stock.noWasteQty !== 0);
         const skusWithNoStock = extendedProducts.filter(ep => ep.stock.noWasteQty === 0);
-        const skusWithIdentifiers = extendedProductsWithStock.filter(ep => ep.simpleProducts.some(simpleproduct => !simpleproduct.includes("-")));
-        const skusWithVariants = extendedProductsWithStock.filter(ep => ep.simpleProducts.some(simpleproduct => simpleproduct.includes("-")));
+        const skusWithVariants: ExtendenProduct[] = [];
+        const skusWithIdentifiers: ExtendenProduct[] = [];
+        extendedProductsWithStock.forEach(ep => {
+            if (ep.simpleProducts.some(simpleproduct => !simpleproduct.includes("-"))) {
+                skusWithIdentifiers.push(ep);
+            } else {
+                skusWithVariants.push(ep);
+            }
+        });
 
         const skusToTest = skusWithVariants.map(product => {
             const getAttribute = (code: string) => product.custom_attributes.find(ca => ca.attribute_code.toLowerCase() === code)?.value;
@@ -172,7 +189,8 @@ export const magento = {
             skusToTest,
             skusWithNoSimpleProducts: skusWithNoSimpleProducts.map(entry => entry.sku),
             skusWithNoStock: skusWithNoStock.map(entry => entry.sku),
-            skusWithIdentifiers: skusWithIdentifiers.map(entry => entry.sku)
+            skusWithIdentifiers: skusWithIdentifiers.map(entry => entry.sku),
+            rnbLooks: rnbLooks,
         };
     }
 }

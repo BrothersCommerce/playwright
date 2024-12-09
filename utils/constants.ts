@@ -25,6 +25,24 @@ export const MAGENTO_ATTR = {
         Koftor_och_cardigans: { label: 'Koftor & cardigans', value: 2728 },
         Kostym: { label: 'Kostym', value: 3087 }
     },
+    categories: [
+        { label: 'Accessoarer', value: 2689 },
+        { label: 'Byxor', value: 2692 },
+        { label: 'Jackor & Rockar', value: 2695 },
+        { label: 'Jeans', value: 2698 },
+        { label: 'Kavajer', value: 2701 },
+        { label: 'Kostymbyxor', value: 2731 },
+        { label: 'Kostymvästar', value: 2704 },
+        { label: 'Flanell', value: 2707 },
+        { label: 'Shorts', value: 2710 },
+        { label: 'Skjortor', value: 2713 },
+        { label: 'Sweats', value: 2716 },
+        { label: 'T-shirts & Pikéer', value: 2719 },
+        { label: 'Tröjor', value: 2722 },
+        { label: 'Underkläder', value: 2725 },
+        { label: 'Koftor & cardigans', value: 2728 },
+        { label: 'Kostym', value: 3087 }
+    ],
     status: {
         enabled: 1,
         disabled: 2

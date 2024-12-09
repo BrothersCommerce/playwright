@@ -114,3 +114,5 @@ export type MagentoStockSourceResponse = {
   },
   total_count: number
 }
+
+export type ExtendenProduct = {simpleProducts: string[], stock: { noWasteQty: number; inStoreQty: number }} & MagentoConfigurableProduct;
