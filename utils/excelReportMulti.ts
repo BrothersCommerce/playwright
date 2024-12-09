@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { ExcelRow } from './types';
 import { updateExcelRows } from './updateExcelRows';
+import sgMail, { MailDataRequired } from "@sendgrid/mail";
 
 export const excelReportMulti = async ({ excelRows, testTarget, duplicatedRows, saleStatus }: { excelRows: ExcelRow[], testTarget: string, duplicatedRows: number, saleStatus?: "active" | "inactive" }) => {
     const updatedExcelRows = await updateExcelRows(excelRows);
@@ -309,13 +310,44 @@ export const excelReportMulti = async ({ excelRows, testTarget, duplicatedRows, 
     const date = timestamp.getUTCDate();
     const folderName = `${year}-${month}-${date}`;
 
-    // Save the testreports locally
-    const localDir = `${path.resolve()}/excel-reports/${folderName}`;
-    fs.ensureDirSync(localDir);
-    fs.writeFileSync(`${path.resolve()}/excel-reports/${folderName}/${excelReportName}test-report.xlsx`, buf);
+    if (process.env.GITHUB_ACTION && process.env.SEND_GRID_API_KEY) {
+            const localDir = `${path.resolve()}/excel-reports/${folderName}`;
+            fs.ensureDirSync(localDir);
+            fs.writeFileSync(`${path.resolve()}/excel-reports/${folderName}/${excelReportName}test-report.xlsx`, buf);
 
-    // Save the testreports to shared drive
-    const dir = `C:\\Users\\bdangus\\OneDrive - Brothers AB\\Produktlista IT/${folderName}`;
-    fs.ensureDirSync(dir);
-    fs.writeFileSync(`C:\\Users\\bdangus\\OneDrive - Brothers AB\\Produktlista IT/${folderName}/${excelReportName}test-report.xlsx`, buf);
+            sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
+
+            fs.readFile((`${path.resolve()}/excel-reports/${folderName}/${excelReportName}test-report.xlsx`), async (error, testReport) => {
+                if (error) {
+                    throw new Error(error);
+                } else if (testReport) {
+                    const msg: MailDataRequired = {
+                        to: 'daniel.gustavsson@brothers.se',
+                        from: 'it@brothers.se',
+                        subject: `Playwright test för kategori: ${testTarget}`,
+                        text: 'rapporten finns bifogad som excel',
+                        attachments: [
+                            {
+                                content: testReport.toString('base64'),
+                                filename: `${excelReportName}test-report.xlsx`,
+                                type: "application/xlsx",
+                                disposition: "attachment"
+                            }
+                        ]
+                      };
+                    const sgResponse = await sgMail.send(msg);
+                    console.log({ sgResponse });
+                }
+            })
+    } else {
+        // Save the testreports locally
+        const localDir = `${path.resolve()}/excel-reports/${folderName}`;
+        fs.ensureDirSync(localDir);
+        fs.writeFileSync(`${path.resolve()}/excel-reports/${folderName}/${excelReportName}test-report.xlsx`, buf);
+    
+        // Save the testreports to shared drive
+        const dir = `C:\\Users\\bdangus\\OneDrive - Brothers AB\\Produktlista IT/${folderName}`;
+        fs.ensureDirSync(dir);
+        fs.writeFileSync(`C:\\Users\\bdangus\\OneDrive - Brothers AB\\Produktlista IT/${folderName}/${excelReportName}test-report.xlsx`, buf);
+    }
 }
