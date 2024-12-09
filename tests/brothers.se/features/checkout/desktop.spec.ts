@@ -1,6 +1,5 @@
-import { test, expect, devices } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { setupBrothersSE } from '../../../../shared-functions/setupBrothersSE';
-import { excelReportFeature } from '../../../../utils/excelReportFeatures';
 
 const productPath = "3030127-3010";
 let page;
@@ -11,8 +10,8 @@ test.beforeAll(async ({ browser }) => {
 });
 
 test.afterAll(async () => {
-    await excelReportFeature(result);
-})
+
+});
 
 test("Add socks to the cart, change cart and load Klarnas iFrame", async () => {
     await page.goto(`https://www.brothers.se/${productPath}`);
