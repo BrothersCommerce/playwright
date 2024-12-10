@@ -26,7 +26,7 @@ on:
 jobs:
   playwright-test:
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container:
       image: mcr.microsoft.com/playwright:v1.49.1-noble
       options: --user 1001
