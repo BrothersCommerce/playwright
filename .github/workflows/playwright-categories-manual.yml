@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./tests/web-application
+        working-directory: ./tests
     container:
       image: mcr.microsoft.com/playwright:v1.49.1-noble
       options: --user 1001
