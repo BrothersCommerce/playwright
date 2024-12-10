@@ -26,8 +26,6 @@ export function updateExcelRows (excelRows: ExcelRow[]): Promise<ExcelRow[]> {
         if (PLP && updatedExcelRows) {
             updatedExcelRows = updatedExcelRows.map(test => {
                 const label = test.label.toLowerCase();
-
-                console.dir(test, { depth: 20 });
         
                 switch (label) {
                     case "status":
