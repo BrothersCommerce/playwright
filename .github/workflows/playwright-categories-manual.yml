@@ -27,6 +27,9 @@ jobs:
   playwright-test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./tests/web-application
     container:
       image: mcr.microsoft.com/playwright:v1.49.1-noble
       options: --user 1001
