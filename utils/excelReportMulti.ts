@@ -116,6 +116,7 @@ export const excelReportMulti = async ({ excelRows, testTarget, duplicatedRows, 
                         || isPrice
                         || (cellValue.includes("site") && inStock)
                         || cellValue === "NOT CONNECTED"
+                        || cellValue === "RNB?"
                         || cellValue === "") {
                             color = status.ok;
                         };
@@ -124,7 +125,6 @@ export const excelReportMulti = async ({ excelRows, testTarget, duplicatedRows, 
                         || cellValue === "ERROR SALE ACTIVE"
                         || cellValue.includes("(identifiers found)")
                         || cellValue === "IDENTIFIERS"
-                        || cellValue === "RNB?"
                         || cellValue === "DIFF") {
                             color = status.error;
                         };
@@ -310,7 +310,7 @@ export const excelReportMulti = async ({ excelRows, testTarget, duplicatedRows, 
     const date = timestamp.getUTCDate();
     const folderName = `${year}-${month}-${date}`;
 
-    if (process.env.GITHUB_ACTION && process.env.SEND_GRID_API_KEY) {
+    if (process.env.ENV_GITHUB_ACTION === "true" && process.env.SEND_GRID_API_KEY) {
             const localDir = `${path.resolve()}/excel-reports/${folderName}`;
             fs.ensureDirSync(localDir);
             fs.writeFileSync(`${path.resolve()}/excel-reports/${folderName}/${excelReportName}test-report.xlsx`, buf);
@@ -322,7 +322,7 @@ export const excelReportMulti = async ({ excelRows, testTarget, duplicatedRows, 
                     throw new Error(error);
                 } else if (testReport) {
                     const msg: MailDataRequired = {
-                        to: 'daniel.gustavsson@brothers.se',
+                        to: 'daniel.gustavsson@brothers.se;daniel.gustavsson@visionite.se',
                         from: 'it@brothers.se',
                         subject: `Playwright test för kategori: ${testTarget}`,
                         text: 'rapporten finns bifogad som excel',
@@ -338,7 +338,7 @@ export const excelReportMulti = async ({ excelRows, testTarget, duplicatedRows, 
                     const sgResponse = await sgMail.send(msg);
                     console.log({ sgResponse });
                 }
-            })
+            });
     } else {
         // Save the testreports locally
         const localDir = `${path.resolve()}/excel-reports/${folderName}`;

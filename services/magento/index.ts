@@ -51,9 +51,14 @@ export const magento = {
     getProductStatus: async (sku: string) => {
         const endpoint = `/products/${sku}`;
         const res = await request<MagentoConfigurableProduct & { message: string }>(endpoint);
+
+        // This is the only way to guess if the product is a RNB look. If the product pass the PLP test but get this response from Magento
+        // the reason is that we use the products product_key field as the sku field if it is an RNB, sometimes and sometimes not.
+        // So the best we can do is to catch these with the error message from Magento and set status "RNB?", even though some products will get a response that contains
+        // res.type_id === "rnblook"
         const potentialRNBlook = "The product that was requested doesn't exist. Verify the product and try again.";
 
-        if (res.message === potentialRNBlook) {
+        if (res.message === potentialRNBlook || res.type_id === "rnblook") {
             return { status: "RNB?", connectedSku: "", sku, magentoSlp: -1 };
         }
 
@@ -118,7 +123,7 @@ export const magento = {
 
         return { noWasteQty, inStoreQty };
     },
-    getFilteredProducts: async (filters: Filter[]) => {
+    getFilteredProducts: async ({ filters, onlySkus }: { filters: Filter[], onlySkus: boolean }) => {
         const filterQueryString = getFilterQueryString(filters);
         const endpoint = `/products${filterQueryString}`;
 
@@ -128,7 +133,14 @@ export const magento = {
             if (product.type_id === "rnblook" && product.custom_attributes.some(ca => ca.attribute_code === "product_key")) {
                 return product;
             }
-    });
+        });
+
+        if (onlySkus) {
+            return {
+                skusToTest: fetchProductsWithFilter.map(product => product.sku),
+                rnbProductKeys: rnbLooks.map(rnb => rnb.custom_attributes.find(ca => ca.attribute_code === "product_key")?.value).filter(v => v),
+            };
+        }
 
         const skusWithNoSimpleProducts = fetchProductsWithFilter.filter(product => product.extension_attributes.configurable_product_links && !product.extension_attributes.configurable_product_links.length);
 
