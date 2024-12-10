@@ -35,7 +35,7 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install chromium --with-deps
     - name: Run Playwright Kategori test
-      run: npx playwright test kategori.spec.ts --project chromium
+      run: npx playwright test kategori.spec.ts
       env:
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
