@@ -27,15 +27,18 @@ jobs:
   playwright-test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.49.1-noble
+      options: --user 1001
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
+      with:
+        node-version: lts/*
     - name: Install dependencies
       run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install chromium --with-deps
     - name: Run Playwright Kategori test
-      run: npx playwright test kategori.spec.ts
+      run: npx playwright test kategori
       env:
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
