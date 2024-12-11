@@ -23,6 +23,7 @@ test.beforeAll(async ({ browser }) => {
     page = await setupBrothersSE(browser);
 
     const targetCategory = process.env.CATEGORY_UNDER_TEST;
+    console.log("process.env.CATEGORY_UNDER_TEST: ", targetCategory)
     const data = await service.magento.getFilteredProducts({
         filters: [
                 {
