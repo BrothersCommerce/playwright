@@ -8,13 +8,23 @@ jobs:
     uses: ./.github/workflows/common-steps.yml
     with:
       category: Accessoarer
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
 
   byxor:
-      uses: ./.github/workflows/common-steps.yml
-      with:
-        category: Byxor
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Byxor
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   jackor-och-rockar:
-      uses: ./.github/workflows/common-steps.yml
-      with:
-        category: Jackor & Rockar
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Jackor & Rockar
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
