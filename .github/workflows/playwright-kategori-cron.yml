@@ -44,13 +44,13 @@ jobs:
       MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
-  kostymbyxor:
-    uses: ./.github/workflows/common-steps.yml
-    with:
-      category: Kostymbyxor
-    secrets:
-      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
-      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+  # kostymbyxor:
+  #   uses: ./.github/workflows/common-steps.yml
+  #   with:
+  #     category: Kostymbyxor
+  #   secrets:
+  #     MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+  #     SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   kostymvastar:
     uses: ./.github/workflows/common-steps.yml
@@ -60,13 +60,13 @@ jobs:
       MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
-  flanell:
-    uses: ./.github/workflows/common-steps.yml
-    with:
-      category: Flanell
-    secrets:
-      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
-      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+  # flanell:
+  #   uses: ./.github/workflows/common-steps.yml
+  #   with:
+  #     category: Flanell
+  #   secrets:
+  #     MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+  #     SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   shorts:
     uses: ./.github/workflows/common-steps.yml
@@ -84,13 +84,13 @@ jobs:
       MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
-  sweats:
-    uses: ./.github/workflows/common-steps.yml
-    with:
-      category: Sweats
-    secrets:
-      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
-      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+  # sweats:
+  #   uses: ./.github/workflows/common-steps.yml
+  #   with:
+  #     category: Sweats
+  #   secrets:
+  #     MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+  #     SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   tshirts-pikeer:
     uses: ./.github/workflows/common-steps.yml
