@@ -23,9 +23,6 @@ on:
         - Koftor & cardigans
         - Kostym
         required: true
-defaults:
-  run:
-    working-directory: tests
 jobs:
   playwright-test:
     timeout-minutes: 60
