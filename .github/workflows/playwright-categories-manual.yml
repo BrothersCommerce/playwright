@@ -52,3 +52,9 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: excel-report
+        path: excel-reports/
+        retention-days: 30
