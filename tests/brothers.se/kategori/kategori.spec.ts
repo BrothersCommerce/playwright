@@ -53,13 +53,16 @@ test.beforeAll(async ({ browser }) => {
         onlySkus: true
     });
 
-    skus = (process.env.CATEGORY_UNDER_TEST ?? "").toLowerCase() === "kostym" ? data.rnbProductKeys : data.skusToTest;
+    skus = (process.env.CATEGORY_UNDER_TEST ?? "").toLowerCase() === "kostym" ? data.rnbProductKeys : data.skusWithSimpleProducts;
 
     console.log(`${skus.length} SKUs in Kategori "${process.env.CATEGORY_UNDER_TEST}" to be tested.`);
 });
 
 test.afterAll(async () => {
-    await excelReportMulti({ excelRows, testTarget, duplicatedRows, saleStatus: "active" });
+    if (excelRows.length < 1) {
+        await excelReportMulti({ excelRows, testTarget, duplicatedRows, saleStatus: "active" });
+    }
+
     await page.close();
 });
 

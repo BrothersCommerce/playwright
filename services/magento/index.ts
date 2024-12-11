@@ -126,25 +126,35 @@ export const magento = {
     getFilteredProducts: async ({ filters, onlySkus }: { filters: Filter[], onlySkus: boolean }) => {
         const filterQueryString = getFilterQueryString(filters);
         const endpoint = `/products${filterQueryString}`;
+        let fetchProductsWithFilter: MagentoConfigurableProduct[] | undefined;
 
-        const fetchProductsWithFilter = (await request<{ items: MagentoConfigurableProduct[] }>(endpoint)).items;
+        try {
+            const requestConfigurableProducts = await request<{ items: MagentoConfigurableProduct[], total_count: number }>(endpoint);
+            if (requestConfigurableProducts.total_count < 1) throw new Error("No configurables match the filters!");
 
+            fetchProductsWithFilter = requestConfigurableProducts.items;
+        } catch (error) {
+            console.error(error.message);
+            fetchProductsWithFilter = [];
+        }
+        
         const rnbLooks = fetchProductsWithFilter.filter(product => {
             if (product.type_id === "rnblook" && product.custom_attributes.some(ca => ca.attribute_code === "product_key")) {
                 return product;
             }
         });
 
+        const productsWithSimpleProducts = fetchProductsWithFilter.filter(product => product.extension_attributes.configurable_product_links && product.extension_attributes.configurable_product_links.length);
+
         if (onlySkus) {
             return {
                 skusToTest: fetchProductsWithFilter.map(product => product.sku),
+                skusWithSimpleProducts: productsWithSimpleProducts,
                 rnbProductKeys: rnbLooks.map(rnb => rnb.custom_attributes.find(ca => ca.attribute_code === "product_key")?.value).filter(v => v),
             };
         }
 
         const skusWithNoSimpleProducts = fetchProductsWithFilter.filter(product => product.extension_attributes.configurable_product_links && !product.extension_attributes.configurable_product_links.length);
-
-        const productsWithSimpleProducts = fetchProductsWithFilter.filter(product => product.extension_attributes.configurable_product_links && product.extension_attributes.configurable_product_links.length);
 
         const { skus: fetchSimpleProducts } = (await magento.getSimpleProductsForAllSkus(productsWithSimpleProducts.map(product => product.sku)));
 
