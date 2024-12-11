@@ -1,4 +1,4 @@
 # playwright
 
 ## Github Actions
-Current lts Ubuntu: 22.04.5
+Current LTS Ubuntu: 22.04.5
