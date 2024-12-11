@@ -6,9 +6,6 @@ on:
       category:
         required: true
         type: string
-    secrets:
-      MAGENTO_TOKEN: {}
-      SEND_GRID_API_KEY: {}
 
 jobs:
   run-playwright-tests:
@@ -29,6 +26,8 @@ jobs:
           CATEGORY_UNDER_TEST: ${{ inputs.category }}
           ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
           MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
+          MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+          SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
           MAIL_TO: ${{ vars.MAIL_TO }}
           run: echo ".ENV is populated"
       - name: Upload Playwright Reports
