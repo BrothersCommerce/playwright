@@ -1,0 +1,133 @@
+name: CRON - Kategorier
+
+on:
+  workflow_dispatch
+
+jobs:
+  accessoarer:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Accessoarer
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  byxor:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Byxor
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  jackor-rockar:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Jackor & Rockar
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  jeans:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Jeans
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  kavajer:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Kavajer
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  kostymbyxor:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Kostymbyxor
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  kostymvastar:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Kostymvästar
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  flanell:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Flanell
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  shorts:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Shorts
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  skjortor:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Skjortor
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  sweats:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Sweats
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  tshirts-pikeer:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: T-shirts & Pikéer
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  trojor:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Tröjor
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  underklader:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Underkläder
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  koftor-cardigans:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Koftor & cardigans
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+
+  kostym:
+    uses: ./.github/workflows/common-steps.yml
+    with:
+      category: Kostym
+    secrets:
+      MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+      SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}

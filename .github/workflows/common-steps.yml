@@ -11,7 +11,7 @@ on:
       SEND_GRID_API_KEY: {}
 
 jobs:
-  run-playwright-tests:
+  test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
@@ -37,13 +37,13 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-reports-${{ inputs.category }}
+          name: playwright-report-${{ inputs.category }}
           path: playwright-report/
           retention-days: 30
       - name: Upload Excel Reports
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: excel-reports-${{ inputs.category }}
+          name: excel-report-${{ inputs.category }}
           path: excel-reports/
           retention-days: 30
