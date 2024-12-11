@@ -15,19 +15,31 @@ import { testChildrenToNotHaveIdentifiers } from "../../../shared-functions/test
 
 let skus;
 
-let { page, excelRows, testTarget, duplicatedRows, offlineProductPages, excelSLP, magentoData } = setupTestData(process.env.CATEGORY_UNDER_TEST ?? "unknown test");
+let { page, excelRows, testTarget, duplicatedRows, offlineProductPages } = setupTestData(process.env.CATEGORY_UNDER_TEST ?? "unknown test");
 
 test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async ({ browser }) => {
     page = await setupBrothersSE(browser);
 
-    const targetCategory = process.env.CATEGORY_UNDER_TEST;
+    const getCategoryCode = (): Promise<number> => {
+        return new Promise((resolve, reject) => {
+        const codeEntry = MAGENTO_ATTR.categories.find(cat => cat.label.toLowerCase() === testTarget.toLowerCase());
+        if (codeEntry && codeEntry.value) {
+          resolve(codeEntry.value);
+        }
+  
+        reject(0);
+      });
+    };
+
+    const categoryCode = await getCategoryCode();
+
     const data = await service.magento.getFilteredProducts({
         filters: [
                 {
                     field: "Kategori",
-                    value: MAGENTO_ATTR.categories.find(category => category.label.toLowerCase() === targetCategory?.toLowerCase())?.value ?? "",
+                    value: categoryCode,
                 },
                 {
                     field: "status",

@@ -1,0 +1,49 @@
+name: Common Steps
+
+on:
+  workflow_call:
+    inputs:
+      category:
+        required: true
+        type: string
+    secrets:
+      MAGENTO_TOKEN: {}
+      SEND_GRID_API_KEY: {}
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.49.1-noble
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+      - name: Run test
+        run: npx playwright test kategori.spec.ts --project chromium
+        env:
+          CATEGORY_UNDER_TEST: ${{ inputs.category }}
+          ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
+          MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
+          MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+          SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
+          MAIL_TO: ${{ vars.MAIL_TO }}
+          run: echo ".ENV is populated"
+      - name: Upload Playwright Reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ inputs.category }}
+          path: playwright-report/
+          retention-days: 30
+      - name: Upload Excel Reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: excel-report-${{ inputs.category }}
+          path: excel-reports/
+          retention-days: 30
