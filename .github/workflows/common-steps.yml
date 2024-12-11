@@ -6,6 +6,9 @@ on:
       category:
         required: true
         type: string
+    secrets:
+      MAGENTO_TOKEN: {}
+      SEND_GRID_API_KEY: {}
 
 jobs:
   run-playwright-tests:
