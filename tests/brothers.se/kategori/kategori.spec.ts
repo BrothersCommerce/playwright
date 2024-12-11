@@ -22,11 +22,24 @@ test.describe.configure({ mode: "serial" });
 test.beforeAll(async ({ browser }) => {
     page = await setupBrothersSE(browser);
 
+    const getCategoryCode = (): Promise<number> => {
+        return new Promise((resolve, reject) => {
+        const codeEntry = MAGENTO_ATTR.categories.find(cat => cat.label.toLowerCase() === testTarget.toLowerCase());
+        if (codeEntry && codeEntry.value) {
+          resolve(codeEntry.value);
+        }
+  
+        reject(0);
+      });
+    };
+
+    const categoryCode = await getCategoryCode();
+
     const data = await service.magento.getFilteredProducts({
         filters: [
                 {
                     field: "Kategori",
-                    value: MAGENTO_ATTR.categories.find(category => category.label.toLowerCase() === testTarget?.toLowerCase())?.value ?? "",
+                    value: categoryCode,
                 },
                 {
                     field: "status",

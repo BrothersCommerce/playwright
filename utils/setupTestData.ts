@@ -1,6 +1,7 @@
 import { read, utils } from 'xlsx';
 import { readFileSync } from 'fs';
 import type { ExcelRow, MagentoData, ProductPage, SetupData, slpObject, ExcelSLPNode } from "./types";
+import { MAGENTO_ATTR } from './constants';
 
 const getTestData = (sheetName: string) => {
     const buffer = readFileSync(`test-data/Senaste lägsta pris 2024.xlsx`);
