@@ -39,10 +39,12 @@ jobs:
     - name: Run Playwright Kategori test
       run: npx playwright test kategori.spec.ts --project chromium
       env:
-        MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
-        MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
-        SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
         CATEGORY_UNDER_TEST: ${{ github.event.inputs.targetCategory }}
+        ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
+        MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
+        MAIL_TO: ${{ vars.MAIL_TO }}
+        MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
+        SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
         run: echo ".ENV is populated"
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
