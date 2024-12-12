@@ -85,7 +85,7 @@ test.afterAll(async () => {
     if (skus.length > 0) {
         await excelReportMulti({ excelRows, testTarget, duplicatedRows, saleStatus: "active" });
     } else {
-        console.log("--------------------------")
+        console.log("--------------------------");
         console.log("INFO: No products to test.");
     }
     
@@ -93,12 +93,14 @@ test.afterAll(async () => {
 });
 
 test(`PLP`, async () => {
+    test.skip(!skus.length, "PLP: No products to test...");
     const data = await testPLP({ testTarget, skus, page });
     offlineProductPages = data.offlineData;
     excelRows.push({ label: data.label, result: data.result });
 });
 
 test(`SKU status: ${testTarget}`, async () => {
+    test.skip(!skus.length, "SKU status: No products to test...");
     const status = await testMagentoStatus({ skus, testTarget });
     excelRows.push({ label: status.label, result: status.result });
 
@@ -109,11 +111,13 @@ test(`SKU status: ${testTarget}`, async () => {
 });
 
 test(`PDP: ${testTarget}`, async () => {
+    test.skip(!skus.length, "PDP: No products to test...");
     const data = await testPDP({ offlineProductPages, testTarget, skus });
     excelRows.push({ label: data.label, result: data.result });
 });
 
 test(`PDP regular price "${testTarget}`, async () => {
+    test.skip(!skus.length, "PDP regular price: No products to test...");
     const data = await testRegularPricesPDP({ testTarget, skus, offlineProductPages });
     excelRows.push({ label: data.label, result: data.result });
 });
