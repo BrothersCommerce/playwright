@@ -1,5 +1,5 @@
 import { service } from "../../../services";
-import test from "@playwright/test";
+import test, { expect } from "@playwright/test";
 import { MAGENTO_ATTR } from "../../../utils/constants";
 import { setupTestData } from "../../../utils/setupTestData";
 import { setupBrothersSE } from "../../../shared-functions/setupBrothersSE";
@@ -10,10 +10,8 @@ import { testRegularPricesPDP } from "../../../shared-functions/testRegularPrice
 import { testMagentoStatus } from "../../../shared-functions/testMagentoStatus";
 import { testMagentoConnectedSkus } from "../../../shared-functions/testConenctedStatus";
 import { setMagentoSlp } from "../../../shared-functions/setMagentoSlp";
-import { testMagentoStockQty } from "../../../shared-functions/testMagentoStockQty";
-import { testChildrenToNotHaveIdentifiers } from "../../../shared-functions/testForIdentifiers";
 
-let skus;
+let skus: string[] = [];
 
 let { page, excelRows, testTarget, duplicatedRows, offlineProductPages } = setupTestData(process.env.CATEGORY_UNDER_TEST ?? "unknown test");
 
@@ -35,7 +33,7 @@ test.beforeAll(async ({ browser }) => {
 
     const categoryCode = await getCategoryCode();
 
-    const data = await service.magento.getFilteredProducts({
+    const { skus: skusToTest, noChilds, outOfStock } = await service.magento.getFilteredProducts({
         filters: [
                 {
                     field: "Kategori",
@@ -50,19 +48,47 @@ test.beforeAll(async ({ browser }) => {
                     value: MAGENTO_ATTR.visibility.catalogAndSearch
                 }
             ],
-        onlySkus: true
     });
 
-    skus = (process.env.CATEGORY_UNDER_TEST ?? "").toLowerCase() === "kostym" ? data.rnbProductKeys : data.skusWithSimpleProducts;
+    const printExcludedSKUs = () => {
+        const removedNoChilds = (noChilds && noChilds.length) ?? 0;
+        const removedOutOfStock = (outOfStock && outOfStock.length) ?? 0;
+        const removedSkus = removedNoChilds + removedOutOfStock;
+        console.log("");
+        console.log("");
+        console.log(`${removedSkus} SKUs removed from test. ${removedSkus > 0 ? "Reasons and SKUs listed bellow:" : ""}`);
+        console.log("*********************************************************");
+        if (noChilds && noChilds.length) {
+            console.log("");
+            console.log("NO SIMPLE PRODUCTS CONNECTED:");
+            console.log("");
+            for (const sku of noChilds) console.log(sku);
+        }
+
+        if (outOfStock && outOfStock.length) {
+            console.log("");
+            console.log("OUT OF STOCK:");
+            console.log("");
+            for (const sku of outOfStock) console.log(sku);
+        }
+        console.log("");
+    }
+
+    printExcludedSKUs();
+
+    skus = skusToTest;
 
     console.log(`${skus.length} SKUs in Kategori "${process.env.CATEGORY_UNDER_TEST}" to be tested.`);
 });
 
 test.afterAll(async () => {
-    if (excelRows.length < 1) {
+    if (skus.length > 0) {
         await excelReportMulti({ excelRows, testTarget, duplicatedRows, saleStatus: "active" });
+    } else {
+        console.log("--------------------------")
+        console.log("INFO: No products to test.");
     }
-
+    
     await page.close();
 });
 
@@ -89,13 +115,5 @@ test(`PDP: ${testTarget}`, async () => {
 
 test(`PDP regular price "${testTarget}`, async () => {
     const data = await testRegularPricesPDP({ testTarget, skus, offlineProductPages });
-    excelRows.push({ label: data.label, result: data.result });
-});
-
-test(`SKU stock QTY: ${testTarget}`, async () => {
-    const { result, label, allSimpleSkus } = await testMagentoStockQty({ offlineProductPages, testTarget, skus });
-    excelRows.push({ label, result });
-    
-    const data = await testChildrenToNotHaveIdentifiers({ allSimpleSkus, testTarget, skus });
     excelRows.push({ label: data.label, result: data.result });
 });

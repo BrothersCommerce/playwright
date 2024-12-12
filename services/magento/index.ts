@@ -27,7 +27,7 @@ const getFilterQueryString = (filters: Filter[]) => {
 }
 
 
-const request = async <T>(endpoint: string, options: RequestOptions = { method: 'GET'}): Promise<T> => {
+const request = <T>(endpoint: string, options: RequestOptions = { method: 'GET'}): Promise<T> => {
     return new Promise(async (resolve, reject) => {
         let response;
         try {
@@ -42,7 +42,75 @@ const request = async <T>(endpoint: string, options: RequestOptions = { method: 
 
             resolve(response.json() as T & { message: string });
         } catch (error) {
-            console.log(error);
+            reject(error.message)
+        }
+    });
+}
+
+const getRnbProductKeys = (products: MagentoConfigurableProduct[]) => {
+    const rnbs = products.filter(product => {
+        if (product.type_id === "rnblook" && product.custom_attributes.some(ca => ca.attribute_code === "product_key")) {
+            return product;
+        }
+
+        return null;
+    });
+    
+    const rnbProductKeys = rnbs.map(rnb => rnb.custom_attributes.find(ca => ca.attribute_code === "product_key")?.value).filter(v => typeof v === "string");
+
+    return rnbProductKeys;
+};
+
+const getFilteredSkus = (products: MagentoConfigurableProduct[]): Promise<{ skus: string[], noChilds?: string[], outOfStock?: string[], identifiers?: string[] }> => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const productsWithChilds = products.filter(product => product.extension_attributes.configurable_product_links && product.extension_attributes.configurable_product_links.length);
+            const noChilds = products.filter(product => !product.extension_attributes.configurable_product_links || !product.extension_attributes?.configurable_product_links?.length).map(p => p.sku);
+
+            const rnbProductKeys = getRnbProductKeys(products);
+
+            if (rnbProductKeys.length) {
+                resolve({ skus: rnbProductKeys });
+            }
+
+            const { skus: fetchSimpleProducts } = (await magento.getSimpleProductsForAllSkus(productsWithChilds.map(product => product.sku)));
+            const inStock: string[] = [];
+            const outOfStock: string[] = [];
+            const identifiers: string[] = [];
+
+            for (let i = 0; i < productsWithChilds.length; i++) {
+                console.log(`${i + 1}/${productsWithChilds.length}, get stock quantity for ${productsWithChilds[i].sku}`);
+                const simpleProducts = (fetchSimpleProducts.find(simpleProduct => simpleProduct.parentSku === productsWithChilds[i].sku) ?? { simpleProductSkus: []}).simpleProductSkus;
+                if (simpleProducts.some(sp => !sp.includes("-"))) identifiers.push(productsWithChilds[i].sku);
+                const stock = (await magento.getStockStatus(simpleProducts));
+                if (stock.noWasteQty > 0) inStock.push(productsWithChilds[i].sku);
+                if (stock.noWasteQty < 1) outOfStock.push(productsWithChilds[i].sku);
+            };
+
+            const productsWithStock = productsWithChilds.filter(product => inStock.includes(product.sku));
+
+            const skus = productsWithStock.map(product => product.sku);
+
+            resolve({ skus, noChilds, outOfStock, identifiers });
+        } catch (error) {
+            console.error(error.message);
+            reject({ skus: [] });
+        }
+    });
+};
+
+const getFilteredProducts = (filters: Filter[]): Promise<MagentoConfigurableProduct[]> => {
+    return new Promise (async (resolve, reject) => {
+        try {
+            const filterQueryString = getFilterQueryString(filters);
+            const endpoint = `/products${filterQueryString}`;
+            const requestConfigurableProducts = await request<{ items: MagentoConfigurableProduct[], total_count: number }>(endpoint);
+            if (requestConfigurableProducts.total_count < 1) resolve([]);
+
+            resolve(requestConfigurableProducts.items)
+        } catch (error) {
+            console.error(error.message);
+            reject([]);
         }
     });
 }
@@ -123,96 +191,10 @@ export const magento = {
 
         return { noWasteQty, inStoreQty };
     },
-    getFilteredProducts: async ({ filters, onlySkus }: { filters: Filter[], onlySkus: boolean }) => {
-        const filterQueryString = getFilterQueryString(filters);
-        const endpoint = `/products${filterQueryString}`;
-        let fetchProductsWithFilter: MagentoConfigurableProduct[] | undefined;
+    getFilteredProducts: async ({ filters }: { filters: Filter[] }): Promise<{ skus: string[], noChilds?: string[], outOfStock?: string[], identifiers?: string[] }> => {
+        const products = await getFilteredProducts(filters);
+        const { skus, noChilds, outOfStock, identifiers } = await getFilteredSkus(products);
 
-        try {
-            const requestConfigurableProducts = await request<{ items: MagentoConfigurableProduct[], total_count: number }>(endpoint);
-            if (requestConfigurableProducts.total_count < 1) throw new Error("No configurables match the filters!");
-
-            fetchProductsWithFilter = requestConfigurableProducts.items;
-        } catch (error) {
-            console.error(error.message);
-            fetchProductsWithFilter = [];
-        }
-        
-        const rnbLooks = fetchProductsWithFilter.filter(product => {
-            if (product.type_id === "rnblook" && product.custom_attributes.some(ca => ca.attribute_code === "product_key")) {
-                return product;
-            }
-        });
-
-        const productsWithSimpleProducts = fetchProductsWithFilter.filter(product => product.extension_attributes.configurable_product_links && product.extension_attributes.configurable_product_links.length);
-
-        if (onlySkus) {
-            return {
-                skusToTest: fetchProductsWithFilter.map(product => product.sku),
-                skusWithSimpleProducts: productsWithSimpleProducts,
-                rnbProductKeys: rnbLooks.map(rnb => rnb.custom_attributes.find(ca => ca.attribute_code === "product_key")?.value).filter(v => v),
-            };
-        }
-
-        const skusWithNoSimpleProducts = fetchProductsWithFilter.filter(product => product.extension_attributes.configurable_product_links && !product.extension_attributes.configurable_product_links.length);
-
-        const { skus: fetchSimpleProducts } = (await magento.getSimpleProductsForAllSkus(productsWithSimpleProducts.map(product => product.sku)));
-
-        const extendedProducts: ExtendenProduct[] = [];
-
-        console.log(`${productsWithSimpleProducts.length} skus to be extend with stocks and simple products for testing`);
-        for (let i = 0; i < productsWithSimpleProducts.length; i++) {
-            console.log(`${i + 1}/${productsWithSimpleProducts.length} - Extending SKU: ${productsWithSimpleProducts[i].sku}`);
-            const simpleProducts = (fetchSimpleProducts.find(simpleProduct => simpleProduct.parentSku === productsWithSimpleProducts[i].sku) ?? { simpleProductSkus: []}).simpleProductSkus;
-            const stock = (await magento.getStockStatus(simpleProducts));
-            extendedProducts.push({
-                ...productsWithSimpleProducts[i],
-                simpleProducts,
-                stock
-            });
-        };
-
-        const extendedProductsWithStock = extendedProducts.filter(ep => ep.stock.noWasteQty !== 0);
-        const skusWithNoStock = extendedProducts.filter(ep => ep.stock.noWasteQty === 0);
-        const skusWithVariants: ExtendenProduct[] = [];
-        const skusWithIdentifiers: ExtendenProduct[] = [];
-        extendedProductsWithStock.forEach(ep => {
-            if (ep.simpleProducts.some(simpleproduct => !simpleproduct.includes("-"))) {
-                skusWithIdentifiers.push(ep);
-            } else {
-                skusWithVariants.push(ep);
-            }
-        });
-
-        const skusToTest = skusWithVariants.map(product => {
-            const getAttribute = (code: string) => product.custom_attributes.find(ca => ca.attribute_code.toLowerCase() === code)?.value;
-            return {
-                id: product.id,
-                url: getAttribute("url_key"),
-                kategori: getAttribute("kategori"),
-                categories: getAttribute("category_ids"),
-                brand: getAttribute("brand"),
-                brandId: getAttribute("brand_filter"),
-                sku: product.sku,
-                status: product.status,
-                visibility: product.visibility,
-                created: product.created_at,
-                updated: product.updated_at,
-                typeId: product.type_id,
-                name: product.name,
-                stock: product.stock,
-                simpleProducts: product.simpleProducts,
-                brandAndName: `${getAttribute("brand")}, ${product.name}`
-            }
-        });
-
-
-        return {
-            skusToTest,
-            skusWithNoSimpleProducts: skusWithNoSimpleProducts.map(entry => entry.sku),
-            skusWithNoStock: skusWithNoStock.map(entry => entry.sku),
-            skusWithIdentifiers: skusWithIdentifiers.map(entry => entry.sku),
-            rnbLooks: rnbLooks,
-        };
+        return { skus, noChilds, outOfStock, identifiers };
     }
 }

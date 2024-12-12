@@ -4,6 +4,8 @@ import { updateExcelRows } from './updateExcelRows';
 import { service } from '../services';
 
 export const excelReportMulti = async ({ excelRows, testTarget, duplicatedRows, saleStatus }: { excelRows: ExcelRow[], testTarget: string, duplicatedRows: number, saleStatus?: "active" | "inactive" }) => {
+    if (!excelRows.length) return [];
+
     const updatedExcelRows = await updateExcelRows(excelRows);
     const worksheet = XLSX.utils.aoa_to_sheet([]);
     const multiHeaders: string[] = ["SKU", "SLP ROW" ];
