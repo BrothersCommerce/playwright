@@ -24,8 +24,6 @@ const getPrices = async (snapshot: string): Promise<Prices> => {
        };
   
        const regularNode = root.querySelector(".brProductPrice-tab-wBq > div")?.text.replace(/[kr, ]/g, "") ?? "-1";
-  
-       console.log(regularNode);
        
        resolve({
           regular: +regularNode
@@ -93,7 +91,6 @@ export const testSalePrices = async ({
         });
     } else if (offlineProductPages) {
         offlineProductPages.map(async (productPage, i) => {
-            console.log(productPage.plpPriceBlocks);
             const snapshot = productPage.snapshot;
             const prices = await getPrices(snapshot);
 
@@ -119,8 +116,6 @@ export const testSalePrices = async ({
                     expected: number;
                     received?: number;
                 }}[] = [];
-
-                console.log({ expectedSlp, sale })
 
             if (expectedDiscount && discount !== expectedDiscount) priceErrors.push({ "discount": { received: discount, expected: expectedDiscount }});
             // if (expectedPrices?.regular && regular !== expectedPrices.regular) priceErrors.push({ "regular": { received: regular, expected: expectedPrices.regular }});
