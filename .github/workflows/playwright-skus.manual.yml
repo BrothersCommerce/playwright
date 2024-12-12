@@ -1,4 +1,4 @@
-name: Manually - test Categories
+name: Manually - test sale
 
 on:
   workflow_dispatch
