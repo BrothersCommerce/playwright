@@ -1,4 +1,4 @@
-name: "Manuellt workflow: Kategori"
+name: "Manuellt: Kategori"
 on:
   workflow_dispatch:
     inputs:

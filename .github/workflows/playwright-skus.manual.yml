@@ -1,4 +1,4 @@
-name: Manually - test sale
+name: "Manuellt: Kampanj"
 
 on:
   workflow_dispatch

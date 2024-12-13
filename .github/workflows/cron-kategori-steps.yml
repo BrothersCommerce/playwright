@@ -1,4 +1,4 @@
-name: "CRON workflow: Kategori - shared steps"
+name: "CRON: Kategori - shared steps"
 
 on:
   workflow_call:
