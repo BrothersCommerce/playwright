@@ -1,5 +1,5 @@
 import fetch from 'node-fetch';
-import { ExtendenProduct, MagentoConfigurableProduct, MagentoSimpleProduct, MagentoStockSource, MagentoStockSourceResponse, RequestOptions } from '../../utils/types';
+import { MagentoConfigurableProduct, MagentoSimpleProduct, MagentoStockSource, MagentoStockSourceResponse, RequestOptions } from '../../utils/types';
 
 type FilterCondition = 'eq' | 'finset' | 'from' | 'gt' | 'gteq' | 'in' | 'like' | 'lt' | 'lteq' | 'moreq' | 'neq' | 'nfinset' | 'nin' | 'nlike' | 'notnull' | 'null' | 'to';
 
@@ -9,6 +9,11 @@ type Filter = {
     condition_type?: FilterCondition;
 };
 
+/**
+ * 
+ * @param filters Array with filters in the Magento format. Read more at: https://developer.adobe.com/commerce/webapi/rest/use-rest/performing-searches/
+ * @returns filter query string to attach to the endpoint URL.
+ */
 const getFilterQueryString = (filters: Filter[]) => {
     let filterQueryString = '?';
 
@@ -25,7 +30,6 @@ const getFilterQueryString = (filters: Filter[]) => {
 
     return filterQueryString;
 }
-
 
 const request = <T>(endpoint: string, options: RequestOptions = { method: 'GET'}): Promise<T> => {
     return new Promise(async (resolve, reject) => {
@@ -47,6 +51,11 @@ const request = <T>(endpoint: string, options: RequestOptions = { method: 'GET'}
     });
 }
 
+/**
+ * 
+ * @param products Configurables fetched from Magento
+ * @returns product keys to use as SKUs because RNB looks do not have actually SKUs as Configurables do have.
+ */
 const getRnbProductKeys = (products: MagentoConfigurableProduct[]) => {
     const rnbs = products.filter(product => {
         if (product.type_id === "rnblook" && product.custom_attributes.some(ca => ca.attribute_code === "product_key")) {
@@ -61,6 +70,12 @@ const getRnbProductKeys = (products: MagentoConfigurableProduct[]) => {
     return rnbProductKeys;
 };
 
+/**
+ * 
+ * @param products Configurables fetched from Magento
+ * @returns If all SKUs have stock, childs and no childs with identifiers this function will return 1 array: { sku: string[] }
+ *          In any other case the function will return up to 4 arrays as stated in the return Promise<>.
+ */
 const getFilteredSkus = (products: MagentoConfigurableProduct[]): Promise<{ skus: string[], noChilds?: string[], outOfStock?: string[], identifiers?: string[] }> => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -77,7 +92,7 @@ const getFilteredSkus = (products: MagentoConfigurableProduct[]): Promise<{ skus
             const inStock: string[] = [];
             const outOfStock: string[] = [];
             const identifiers: string[] = [];
-
+  
             for (let i = 0; i < productsWithChilds.length; i++) {
                 console.log(`${i + 1}/${productsWithChilds.length}, get stock quantity for ${productsWithChilds[i].sku}`);
                 const simpleProducts = (fetchSimpleProducts.find(simpleProduct => simpleProduct.parentSku === productsWithChilds[i].sku) ?? { simpleProductSkus: []}).simpleProductSkus;
@@ -99,6 +114,11 @@ const getFilteredSkus = (products: MagentoConfigurableProduct[]): Promise<{ skus
     });
 };
 
+/**
+ * 
+ * @param filters Magento filters in array
+ * @returns Magento Configurable Products
+ */
 const getFilteredProducts = (filters: Filter[]): Promise<MagentoConfigurableProduct[]> => {
     return new Promise (async (resolve, reject) => {
         try {
@@ -113,7 +133,7 @@ const getFilteredProducts = (filters: Filter[]): Promise<MagentoConfigurableProd
             reject([]);
         }
     });
-}
+};
 
 export const magento = {
     getProductStatus: async (sku: string) => {
@@ -197,4 +217,4 @@ export const magento = {
 
         return { skus, noChilds, outOfStock, identifiers };
     }
-}
+};
