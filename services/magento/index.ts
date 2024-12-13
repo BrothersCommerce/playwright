@@ -211,15 +211,14 @@ export const magento = {
 
         return { noWasteQty, inStoreQty };
     },
-    getFilteredProducts: async ({ filters, testAllSkus }: { filters: Filter[], testAllSkus: string }): Promise<{ skus: string[], noChilds?: string[], outOfStock?: string[], identifiers?: string[] }> => {
+    getFilteredProducts: async ({ filters, removeNotOnWebsiteSkus }: { filters: Filter[], removeNotOnWebsiteSkus: string }): Promise<{ skus: string[], noChilds?: string[], outOfStock?: string[], identifiers?: string[] }> => {
         const products = await getFilteredProducts(filters);
 
-        if (testAllSkus === "true") {
-            return { skus: products.map(p => p.sku) };
+        if (removeNotOnWebsiteSkus === "true") {
+            const { skus, noChilds, outOfStock, identifiers } = await getFilteredSkus(products);
+            return { skus, noChilds, outOfStock, identifiers };
         }
-
-        const { skus, noChilds, outOfStock, identifiers } = await getFilteredSkus(products);
-
-        return { skus, noChilds, outOfStock, identifiers };
+        
+        return { skus: products.map(p => p.sku) };
     }
 };

@@ -35,9 +35,9 @@ test.beforeAll(async ({ browser }) => {
 
     const categoryCode = await getCategoryCode();
 
-    const testAllSkus = process.env?.REMOVE_SKUS ?? "false";
+    const removeNotOnWebsiteSkus = process.env?.REMOVE_SKUS ?? "false";
 
-    console.log("Remove SKUs with out-of-stock, no childs and identifiers: ", testAllSkus)
+    console.log("Remove SKUs with out-of-stock, no childs and identifiers: ", removeNotOnWebsiteSkus)
 
     const { skus: skusToTest, noChilds, outOfStock } = await service.magento.getFilteredProducts({
         filters: [
@@ -54,7 +54,7 @@ test.beforeAll(async ({ browser }) => {
                     value: MAGENTO_ATTR.visibility.catalogAndSearch
                 }
             ],
-            testAllSkus
+            removeNotOnWebsiteSkus
     });
 
     const printExcludedSKUs = () => {
@@ -81,7 +81,7 @@ test.beforeAll(async ({ browser }) => {
         console.log("");
     }
 
-    if (!testAllSkus) {
+    if (removeNotOnWebsiteSkus) {
         printExcludedSKUs();
     }
 
