@@ -30,10 +30,11 @@ on:
         - "true"
         - "false"
         default: "true"
+run-name: "Kategori: ${{ github.event.inputs.targetCategory }}, all SKUs=${{ github.event.inputs.removeOutOfStockAndChildless }}"
 
 jobs:
   playwright-test:
-    name: ${{ github.event.inputs.targetCategory }}
+    name: test ${{ github.event.inputs.targetCategory }}
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
