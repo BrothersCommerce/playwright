@@ -24,13 +24,13 @@ on:
         - Kostym
         required: true
       removeOutOfStockAndChildless:
-        description: Remove not-on-website SKUs
+        description: Remove SKUs not on website
         type: choice
         options:
         - "true"
         - "false"
         default: "true"
-run-name: "Kategori: ${{ github.event.inputs.targetCategory }}, all SKUs=${{ github.event.inputs.removeOutOfStockAndChildless }}"
+run-name: "Test kategori: ${{ github.event.inputs.targetCategory }}, remove SKUs not on website=${{ github.event.inputs.removeOutOfStockAndChildless }}"
 
 jobs:
   playwright-test:
