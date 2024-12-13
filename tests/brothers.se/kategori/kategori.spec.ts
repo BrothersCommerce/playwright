@@ -10,6 +10,8 @@ import { testRegularPricesPDP } from "../../../shared-functions/testRegularPrice
 import { testMagentoStatus } from "../../../shared-functions/testMagentoStatus";
 import { testMagentoConnectedSkus } from "../../../shared-functions/testConenctedStatus";
 import { setMagentoSlp } from "../../../shared-functions/setMagentoSlp";
+import { testMagentoStockQty } from "../../../shared-functions/testMagentoStockQty";
+import { testChildrenToNotHaveIdentifiers } from "../../../shared-functions/testForIdentifiers";
 
 let skus: string[] = [];
 
@@ -33,6 +35,10 @@ test.beforeAll(async ({ browser }) => {
 
     const categoryCode = await getCategoryCode();
 
+    const testAllSkus = process.env?.REMOVE_SKUS ?? "false";
+
+    console.log("Remove SKUs with out-of-stock, no childs and identifiers: ", testAllSkus)
+
     const { skus: skusToTest, noChilds, outOfStock } = await service.magento.getFilteredProducts({
         filters: [
                 {
@@ -40,7 +46,7 @@ test.beforeAll(async ({ browser }) => {
                     value: categoryCode,
                 },
                 {
-                    field: "status",
+                    field: "status", 
                     value: MAGENTO_ATTR.status.enabled
                 },
                 {
@@ -48,6 +54,7 @@ test.beforeAll(async ({ browser }) => {
                     value: MAGENTO_ATTR.visibility.catalogAndSearch
                 }
             ],
+            testAllSkus
     });
 
     const printExcludedSKUs = () => {
@@ -74,7 +81,9 @@ test.beforeAll(async ({ browser }) => {
         console.log("");
     }
 
-    printExcludedSKUs();
+    if (!testAllSkus) {
+        printExcludedSKUs();
+    }
 
     skus = skusToTest;
 
@@ -119,5 +128,13 @@ test(`PDP: ${testTarget}`, async () => {
 test(`PDP regular price "${testTarget}`, async () => {
     test.skip(!skus.length, "PDP regular price: No products to test...");
     const data = await testRegularPricesPDP({ testTarget, skus, offlineProductPages });
+    excelRows.push({ label: data.label, result: data.result });
+});
+
+test(`SKU stock QTY: ${testTarget}`, async () => {
+    const { result, label, allSimpleSkus } = await testMagentoStockQty({ offlineProductPages, testTarget, skus });
+    excelRows.push({ label, result });
+    
+    const data = await testChildrenToNotHaveIdentifiers({ allSimpleSkus, testTarget, skus });
     excelRows.push({ label: data.label, result: data.result });
 });

@@ -23,6 +23,12 @@ on:
         - Koftor & cardigans
         - Kostym
         required: true
+      removeOutOfStockAndChildless:
+        description: Remove not-on-website SKUs
+        type: choice
+        options:
+        - true
+        - false
 jobs:
   playwright-test:
     timeout-minutes: 60
@@ -40,6 +46,7 @@ jobs:
       run: npx playwright test kategori.spec.ts --project chromium
       env:
         CATEGORY_UNDER_TEST: ${{ github.event.inputs.targetCategory }}
+        REMOVE_SKUS: ${{ github.event.inputs.removeOutOfStockAndChildless }}
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
         MAIL_TO: ${{ vars.MAIL_TO }}
