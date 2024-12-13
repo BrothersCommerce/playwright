@@ -1,4 +1,4 @@
-name: Common Steps
+name: "CRON workflow: Kategori - shared steps"
 
 on:
   workflow_call:

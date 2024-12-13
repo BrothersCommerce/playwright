@@ -1,9 +1,9 @@
-name: Manually - test Categories
+name: "Manuellt workflow: Kategori"
 on:
   workflow_dispatch:
     inputs:
       targetCategory:
-        description: Choose 1 category to test
+        description: "Välj en kategori att testa:"
         type: choice
         options:
         - Accessoarer

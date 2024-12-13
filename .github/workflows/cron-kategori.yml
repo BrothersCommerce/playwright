@@ -1,11 +1,11 @@
-name: CRON - Kategorier
+name: "CRON workflow: Kategorier"
 
 on:
   workflow_dispatch
 
 jobs:
   accessoarer:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: Accessoarer
     secrets:
@@ -13,7 +13,7 @@ jobs:
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   byxor:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: Byxor
     secrets:
@@ -21,7 +21,7 @@ jobs:
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   jackor-rockar:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: Jackor & Rockar
     secrets:
@@ -29,7 +29,7 @@ jobs:
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   jeans:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: Jeans
     secrets:
@@ -37,7 +37,7 @@ jobs:
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   kavajer:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: Kavajer
     secrets:
@@ -45,7 +45,7 @@ jobs:
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   # kostymbyxor:
-  #   uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+  #   uses: ./.github/workflows/cron-kategori-steps.yml
   #   with:
   #     category: Kostymbyxor
   #   secrets:
@@ -53,7 +53,7 @@ jobs:
   #     SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   kostymvastar:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: Kostymvästar
     secrets:
@@ -61,7 +61,7 @@ jobs:
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   # flanell:
-  #   uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+  #   uses: ./.github/workflows/cron-kategori-steps.yml
   #   with:
   #     category: Flanell
   #   secrets:
@@ -69,7 +69,7 @@ jobs:
   #     SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   shorts:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: Shorts
     secrets:
@@ -77,7 +77,7 @@ jobs:
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   skjortor:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: Skjortor
     secrets:
@@ -85,7 +85,7 @@ jobs:
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   # sweats:
-  #   uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+  #   uses: ./.github/workflows/cron-kategori-steps.yml
   #   with:
   #     category: Sweats
   #   secrets:
@@ -93,7 +93,7 @@ jobs:
   #     SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   tshirts-pikeer:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: T-shirts & Pikéer
     secrets:
@@ -101,7 +101,7 @@ jobs:
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   trojor:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: Tröjor
     secrets:
@@ -109,7 +109,7 @@ jobs:
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   underklader:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: Underkläder
     secrets:
@@ -117,7 +117,7 @@ jobs:
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   koftor-cardigans:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: Koftor & cardigans
     secrets:
@@ -125,7 +125,7 @@ jobs:
       SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
 
   kostym:
-    uses: ./.github/workflows/autotest-kategori-cron-common-steps.yml
+    uses: ./.github/workflows/cron-kategori-steps.yml
     with:
       category: Kostym
     secrets:
