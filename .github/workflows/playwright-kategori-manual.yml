@@ -27,8 +27,10 @@ on:
         description: Remove not-on-website SKUs
         type: choice
         options:
-        - true
-        - false
+        - "true"
+        - "false"
+        default: "true"
+
 jobs:
   playwright-test:
     timeout-minutes: 60
