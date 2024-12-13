@@ -33,6 +33,7 @@ on:
 
 jobs:
   playwright-test:
+    name: ${{ github.event.inputs.targetCategory }}
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
