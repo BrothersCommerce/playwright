@@ -24,13 +24,24 @@ on:
         - Kostym
         required: true
       removeOutOfStockAndChildless:
-        description: Remove SKUs not on website
+        description: Ta bort SKUs som inte kan synas på hemsidan (ingen effekt för kostymer pga RNBs)
         type: choice
         options:
         - "true"
         - "false"
         default: "true"
-run-name: "Manuellt triggat test för: Kategori - ${{ github.event.inputs.targetCategory }}, endast synliga SKUs=${{ github.event.inputs.removeOutOfStockAndChildless }}"
+      sendReportToOneEmail:
+        description: "Skicka rapport endast till:"
+        type: choice
+        options:
+        - "daniel.gustavsson@brothers.se"
+        - "henrietta.stark@brothers.se"
+        - "kristoffer.olsson@untd-rtl.com"
+        - "martin.hanner@brothers.se"
+        - "paulina.alstorp@brothers.se"
+        default: ""
+
+run-name: "Manuellt test: Kategori - ${{ github.event.inputs.targetCategory }}, ta bort SKUs som inte kan synas på hemsidan=${{ github.event.inputs.removeOutOfStockAndChildless }}"
 
 jobs:
   playwright-test:
@@ -54,6 +65,7 @@ jobs:
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
         MAIL_TO: ${{ vars.MAIL_TO }}
+        SINGLE_MAIL_TO: ${{ github.event.inputs.sendReportToOneEmail }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
         SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
         run: echo ".ENV is populated"

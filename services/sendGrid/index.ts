@@ -17,8 +17,11 @@ export const sendGrid = {
                 throw new Error(error);
             } else if (testReport) {
                 const mailAddresses = (process.env.MAIL_TO ?? "").split(",");
+                const singleMailAddress = process.env.SINGLE_MAIL_TO ?? "";
+
+                const to = singleMailAddress.length ? singleMailAddress : mailAddresses;
                 const msg: MailDataRequired = {
-                    to: mailAddresses,
+                    to,
                     from: 'it@brothers.se',
                     subject: `Playwright test för kategori: ${testTarget}`,
                     text: 'rapporten finns bifogad som excel',
