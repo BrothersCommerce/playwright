@@ -19,7 +19,7 @@ export const sendGrid = {
                 const mailAddresses = (process.env.MAIL_TO ?? "").split(",");
                 const singleMailAddress = process.env.SINGLE_MAIL_TO ?? "";
 
-                const to = singleMailAddress.length ? singleMailAddress : mailAddresses;
+                const to = singleMailAddress.length > 1 ? singleMailAddress : mailAddresses;
                 const msg: MailDataRequired = {
                     to,
                     from: 'it@brothers.se',

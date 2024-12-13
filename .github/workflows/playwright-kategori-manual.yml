@@ -34,12 +34,13 @@ on:
         description: "Skicka rapport endast till:"
         type: choice
         options:
+        - " "
         - "daniel.gustavsson@brothers.se"
         - "henrietta.stark@brothers.se"
         - "kristoffer.olsson@untd-rtl.com"
         - "martin.hanner@brothers.se"
         - "paulina.alstorp@brothers.se"
-        default: ""
+        default: " "
 
 run-name: "Manuellt test: Kategori - ${{ github.event.inputs.targetCategory }}, ta bort SKUs som inte kan synas på hemsidan=${{ github.event.inputs.removeOutOfStockAndChildless }}"
 
