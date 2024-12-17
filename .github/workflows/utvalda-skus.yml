@@ -21,8 +21,10 @@ on:
         description: "Skicka rapport endast till den email du skriver in här:"
         type: string
 
+run-name: "Manuellt test: Kampanj - ${{ github.event.inputs.saleName }}"
+
 jobs:
-  test-kategori-accessories:
+  kampanj:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
