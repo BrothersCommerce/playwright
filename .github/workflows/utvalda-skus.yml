@@ -7,16 +7,16 @@ on:
         description: 'Namn på testet camel-case, utan mellanrum. t.ex. "skjortor299kr".'
         type: string
         required: true
-      skus:
-        description: "Copy/paste:a in SKUs som du vill testa här"
-        type: string
-        required: true
-      salePrices:
-        description: "KAMPANJPRISER (Utan kampanjpriser kommer PLP användas för att testa PDP):"
-        type: string
-      slps:
-        description: "SLPs (Utan SLPs kommer PLP användas för att testa PDP):"
-        type: string
+      # skus:
+      #   description: "Copy/paste:a in SKUs som du vill testa här"
+      #   type: string
+      #   required: true
+      # salePrices:
+      #   description: "KAMPANJPRISER (Utan kampanjpriser kommer PLP användas för att testa PDP):"
+      #   type: string
+      # slps:
+      #   description: "SLPs (Utan SLPs kommer PLP användas för att testa PDP):"
+      #   type: string
       sendReportToOneEmail:
         description: "Skicka rapport endast till den email du skriver in här:"
         type: string
@@ -32,24 +32,24 @@ jobs:
       actions: write
     steps:
       - name: Interactive-inputs step
-        id: interactive-inputs
         uses: boasihq/interactive-inputs@v2
+        id: interactive-inputs
         with:
           ngrok-authtoken: ${{ secrets.NGROK_TOKEN }}
           timeout: 160
           title: "Klistra in kampanjinfo"
           interactive: |
             fields:
-              - label: SKUs
+              - label: skus
                 properties:
                   type: textarea
                   description: "Klistra in SKUs att testa:"
                   placeholder: "Paste SKUs here..."
-              -label: Kampanjpriser
+              -label: sale
                 properties:
                   type: textarea
                   description: "Klistra in Kampanjpriser:"
-              - label: SLPs
+              - label: slp
                 properties:
                   type: textarea
                   description: "Klistra in SLPs:"
@@ -71,9 +71,12 @@ jobs:
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
         SALE_NAME: ${{ github.event.inputs.saleName }}
-        SKUS: ${{ github.event.inputs.skus }}
-        SALE_PRICES: ${{ github.event.inputs.salePrices }}
-        SLP: ${{ github.event.inputs.slps }}
+        # SKUS: ${{ github.event.inputs.skus }}
+        # SALE_PRICES: ${{ github.event.inputs.salePrices }}
+        # SLP: ${{ github.event.inputs.slps }}
+        SKUS: ${{ steps.interactive-inputs.outputs.continue-roll-out.skus }}
+        SALE_PRICES: ${{ steps.interactive-inputs.outputs.continue-roll-out.sale }}
+        SLP: ${{ steps.interactive-inputs.outputs.continue-roll-out.slp }}
         SINGLE_MAIL_TO: ${{ github.event.inputs.sendReportToOneEmail }}
         MAIL_TO: ${{ vars.MAIL_TO }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
