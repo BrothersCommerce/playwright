@@ -79,9 +79,9 @@ jobs:
         # SKUS: ${{ github.event.inputs.skus }}
         # SALE_PRICES: ${{ github.event.inputs.salePrices }}
         # SLP: ${{ github.event.inputs.slps }}
-        SKUS: ${{ env.SKUS }}
-        SALE_PRICES: ${{ env.SALE_PRICES }}
-        SLP: ${{ env.SLP }}
+        SKUS: echo "${{ env.SKUS }}"
+        SALE_PRICES: echo "${{ env.SALE_PRICES }}"
+        SLP: echo "${{ env.SLP }}"
         SINGLE_MAIL_TO: ${{ github.event.inputs.sendReportToOneEmail }}
         MAIL_TO: ${{ vars.MAIL_TO }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
