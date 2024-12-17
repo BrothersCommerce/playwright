@@ -31,16 +31,8 @@ on:
         - "false"
         default: "true"
       sendReportToOneEmail:
-        description: "Skicka rapport endast till:"
-        type: choice
-        options:
-        - " "
-        - "daniel.gustavsson@brothers.se"
-        - "henrietta.stark@brothers.se"
-        - "kristoffer.olsson@untd-rtl.com"
-        - "martin.hanner@brothers.se"
-        - "paulina.alstorp@brothers.se"
-        default: " "
+        description: "Skicka rapport endast till den email du skriver in här:"
+        type: string
 
 run-name: "Manuellt test: Kategori - ${{ github.event.inputs.targetCategory }}, ta bort SKUs som inte kan synas på hemsidan=${{ github.event.inputs.removeOutOfStockAndChildless }}"
 

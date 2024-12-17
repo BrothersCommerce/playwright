@@ -116,3 +116,11 @@ export type MagentoStockSourceResponse = {
 }
 
 export type ExtendenProduct = {simpleProducts: string[], stock: { noWasteQty: number; inStoreQty: number }} & MagentoConfigurableProduct;
+
+export type ExpectedPrice = {
+  sku: string;
+  sale?: number;
+  slp?: number;
+  regular?: number;
+  discount?: number;
+};
