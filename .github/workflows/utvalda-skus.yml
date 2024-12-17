@@ -58,9 +58,9 @@ jobs:
                   display: "Klistra in SLPs:"
       - name: Set interactive-inputs as github ENVs
         run: |
-          echo "SKUS<<EOF" ${{ steps.kampanj-inputs.outputs.skus }} echo EOF >> "$GITHUB_OUTPUT"
-          echo SALE=${{ steps.kampanj-inputs.outputs.sale }}" >> $GITHUB_OUTPUT
-          echo SLP=${{ steps.kampanj-inputs.outputs.slp }}" >> $GITHUB_OUTPUT
+          echo "SKUS<<EOF"${{ steps.kampanj-inputs.outputs.skus }} echo EOF >> "$GITHUB_OUTPUT"
+          echo "SALE<<EOF"${{ steps.kampanj-inputs.outputs.sale }} echo EOF >> "$GITHUB_OUTPUT"
+          echo "SLP<<EOF"${{ steps.kampanj-inputs.outputs.slp }} echo EOF >> "$GITHUB_OUTPUT"
   kampanj:
     needs: [kampanj-info]
     timeout-minutes: 60
