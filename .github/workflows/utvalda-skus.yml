@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       saleName:
-        description: 'Namn på testet camel-case, utan mellanrum. t.ex. "skjortor299kr".'
+        description: 'Namn för testet (används i rapportfilnamnet):'
         type: string
         required: true
       # skus:
@@ -43,17 +43,17 @@ jobs:
               - label: skus
                 properties:
                   type: textarea
-                  description: "Klistra in SKUs att testa:"
-                  placeholder: "Paste SKUs here..."
+                  display: "Klistra in SKUs att testa:"
               - label: sale
                 properties:
                   type: textarea
-                  description: "Klistra in Kampanjpriser:"
+                  display: "Klistra in Kampanjpriser:"
               - label: slp
                 properties:
                   type: textarea
-                  description: "Klistra in SLPs:"
+                  display: "Klistra in SLPs:"
   kampanj:
+    needs: interactive-inputs
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
