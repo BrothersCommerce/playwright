@@ -24,41 +24,45 @@ on:
 run-name: "Manuellt test: Kampanj - ${{ github.event.inputs.saleName }}"
 
 jobs:
-  # kampanj-info:
-  #   timeout-minutes: 3
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: write
-  #     actions: write
-  #   steps:
-  #     - name: Interactive inputs step
-  #       id: interactive-inputs
-  #       uses: boasihq/interactive-inputs@v2
-  #       with:
-  #         ngrok-authtoken: ${{ secrets.NGROK_TOKEN }}
-  #         timeout: 160
-  #         title: "Klistra in kampanjinfo"
-  #         interactive: |
-  #           fields:
-  #             - label: skus
-  #               properties:
-  #                 type: textarea
-  #                 display: "Klistra in SKUs att testa:"
-  #             - label: sale
-  #               properties:
-  #                 type: textarea
-  #                 display: "Klistra in Kampanjpriser:"
-  #             - label: slp
-  #               properties:
-  #                 type: textarea
-  #                 display: "Klistra in SLPs:"
-  #     - name: Set interactive-inputs as github ENVs
-  #       run: |
-  #         echo "SKUS='${{ steps.interactive-inputs.outputs.skus }}'" >> $GITHUB_ENV
-  #         echo "SALE='${{ steps.interactive-inputs.outputs.sale }}'" >> $GITHUB_ENV
-  #         echo "SLP='${{ steps.interactive-inputs.outputs.slp }}'" >> $GITHUB_ENV
+  kampanj-info:
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    outputs:
+      skus: ${{ steps.kampanj-inputs.outputs.SKUS }}
+      sale: ${{ steps.kampanj-inputs.outputs.SALE }}
+      slp: ${{ steps.kampanj-inputs.outputs.SLP }}
+    steps:
+      - name: Interactive inputs step
+        id: kampanj-inputs
+        uses: boasihq/interactive-inputs@v2
+        with:
+          ngrok-authtoken: ${{ secrets.NGROK_TOKEN }}
+          timeout: 160
+          title: "Klistra in kampanjinfo"
+          interactive: |
+            fields:
+              - label: skus
+                properties:
+                  type: textarea
+                  display: "Klistra in SKUs att testa:"
+              - label: sale
+                properties:
+                  type: textarea
+                  display: "Klistra in Kampanjpriser:"
+              - label: slp
+                properties:
+                  type: textarea
+                  display: "Klistra in SLPs:"
+      - name: Set interactive-inputs as github ENVs
+        run: |
+          echo "SKUS='${{ steps.kampanj-inputs.outputs.skus }}'" >> $GITHUB_OUTPUT
+          echo "SALE='${{ steps.kampanj-inputs.outputs.sale }}'" >> $GITHUB_OUTPUT
+          echo "SLP='${{ steps.kampanj-inputs.outputs.slp }}'" >> $GITHUB_OUTPUT
   kampanj:
-    # needs: kampanj-info
+    needs: kampanj-info
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
@@ -68,27 +72,6 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
-    - name: Interactive inputs step
-      id: interactive-inputs
-      uses: boasihq/interactive-inputs@v2
-      with:
-        ngrok-authtoken: ${{ secrets.NGROK_TOKEN }}
-        timeout: 160
-        title: "Klistra in kampanjinfo"
-        interactive: |
-          fields:
-            - label: skus
-              properties:
-                type: textarea
-                display: "Klistra in SKUs att testa:"
-            - label: sale
-              properties:
-                type: textarea
-                display: "Klistra in Kampanjpriser:"
-            - label: slp
-              properties:
-                type: textarea
-                display: "Klistra in SLPs:"
     - name: Install dependencies
       run: npm ci
     - name: Run Playwright kampanj test
@@ -97,12 +80,9 @@ jobs:
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
         SALE_NAME: ${{ github.event.inputs.saleName }}
-        # SKUS: ${{ github.event.inputs.skus }}
-        # SALE_PRICES: ${{ github.event.inputs.salePrices }}
-        # SLP: ${{ github.event.inputs.slps }}
-        SKUS: ${{ steps.interactive-inputs.outputs.skus }}
-        SALE_PRICES: ${{ steps.interactive-inputs.outputs.sale }}
-        SLP: ${{ steps.interactive-inputs.outputs.slp }}
+        SKUS: ${{ needs.kampanj-inputs.outputs.skus }}
+        SALE_PRICES: ${{ needs.kampanj-inputs.outputs.outputs.sale }}
+        SLP: ${{ needs.kampanj-inputs.outputs.outputs.slp }}
         SINGLE_MAIL_TO: ${{ github.event.inputs.sendReportToOneEmail }}
         MAIL_TO: ${{ vars.MAIL_TO }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
