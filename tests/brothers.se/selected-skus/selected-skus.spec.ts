@@ -21,6 +21,7 @@ const mitigatedErrors = getMitigatedErrors(`
 let { page, excelRows, testTarget, duplicatedRows, offlineProductPages, excelSLP, magentoData } = setupTestData((process.env.SALE_NAME ?? "unknownSale"));
 
 const getEnvInput = (env?: string): Promise<string[]> => new Promise((resolve) => resolve((env ?? "").trim().split(/\n/).filter(v => v.length > 0).map(v => v.trim())));
+console.log(process.env);
 const skus: string[] = (await getEnvInput(process.env.SKUS)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g));;
 let salePrices: number[] = (await getEnvInput(process.env.SALE_PRICES)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => v.replace(",", "").replace(" ", "")).map(v => +v);
 let slps: number[] = (await getEnvInput(process.env.SLP)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => v.replace(",", "").replace(" ", "")).map(v => +v);
