@@ -22,16 +22,16 @@ let { page, excelRows, testTarget, duplicatedRows, offlineProductPages, excelSLP
 
 const getEnvInput = (env?: string): Promise<string[]> => new Promise((resolve) => resolve((env ?? "").trim().split(/\n/).filter(v => v.length > 0).map(v => v.trim())));
 console.log(process.env);
-const skus: string[] = (await getEnvInput(process.env.SKUS)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g));;
-let salePrices: number[] = (await getEnvInput(process.env.SALE_PRICES)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => v.replace(",", "").replace(" ", "")).map(v => +v);
-let slps: number[] = (await getEnvInput(process.env.SLP)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => v.replace(",", "").replace(" ", "")).map(v => +v);
+let skus;
+let salePrices;
+let slps;
 
 test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async ({ browser }) => {
-    console.log(skus);
-    console.log(salePrices);
-    console.log(slps);
+    skus = (await getEnvInput(process.env.SKUS)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g));
+    salePrices = (await getEnvInput(process.env.SALE_PRICES)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => v.replace(",", "").replace(" ", "")).map(v => +v);
+    slps = (await getEnvInput(process.env.SLP)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => v.replace(",", "").replace(" ", "")).map(v => +v);
     page = await setupBrothersSE(browser);
 });
 
@@ -41,6 +41,10 @@ test.afterAll(async () => {
 });
 
 test(`PLP: ${testTarget}`, async () => {
+    skus = (await getEnvInput(process.env.SKUS)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g));
+    salePrices = (await getEnvInput(process.env.SALE_PRICES)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => v.replace(",", "").replace(" ", "")).map(v => +v);
+    slps = (await getEnvInput(process.env.SLP)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => v.replace(",", "").replace(" ", "")).map(v => +v);
+    
     const data = await testPLP({ testTarget, skus, page, mitigatedErrors });
     offlineProductPages = data.offlineData;
     excelRows.push({ label: data.label, result: data.result });
