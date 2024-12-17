@@ -43,7 +43,7 @@ jobs:
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
         SALE_NAME: ${{ github.event.inputs.saleName }}
         SKUS: ${{ github.event.inputs.skus }}
-        SALE_PRICES: ${{ github.action.inputs.salePrices }}
+        SALE_PRICES: ${{ github.event.inputs.salePrices }}
         SLP: ${{ github.event.inputs.slps }}
         SINGLE_MAIL_TO: ${{ github.event.inputs.sendReportToOneEmail }}
         MAIL_TO: ${{ vars.MAIL_TO }}
