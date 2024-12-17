@@ -24,7 +24,7 @@ on:
 run-name: "Manuellt test: Kampanj - ${{ github.event.inputs.saleName }}"
 
 jobs:
-  interactive-inputs:
+  kampanj-info:
     timeout-minutes: 3
     runs-on: ubuntu-latest
     permissions:
@@ -58,7 +58,7 @@ jobs:
           echo "SALE=${{ steps.interactive-inputs.outputs.continue-roll-out.sale }}" >> $GITHUB_ENV
           echo "SLP=${{ steps.interactive-inputs.outputs.continue-roll-out.slp }}" >> $GITHUB_ENV
   kampanj:
-    needs: interactive-inputs
+    needs: kampanj-info
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
@@ -79,9 +79,9 @@ jobs:
         # SKUS: ${{ github.event.inputs.skus }}
         # SALE_PRICES: ${{ github.event.inputs.salePrices }}
         # SLP: ${{ github.event.inputs.slps }}
-        SKUS: $SKUS
-        SALE_PRICES: $SALE
-        SLP: $SLP
+        SKUS: ${{ env.SKUS }}
+        SALE_PRICES: ${{ env.SALE_PRICES }}
+        SLP: ${{ env.SLP }}
         SINGLE_MAIL_TO: ${{ github.event.inputs.sendReportToOneEmail }}
         MAIL_TO: ${{ vars.MAIL_TO }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
