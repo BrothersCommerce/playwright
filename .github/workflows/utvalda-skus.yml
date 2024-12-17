@@ -57,6 +57,8 @@ jobs:
           echo "SKUS=${{ steps.interactive-inputs.outputs.continue-roll-out.skus }}" >> $GITHUB_ENV
           echo "SALE=${{ steps.interactive-inputs.outputs.continue-roll-out.sale }}" >> $GITHUB_ENV
           echo "SLP=${{ steps.interactive-inputs.outputs.continue-roll-out.slp }}" >> $GITHUB_ENV
+      - name: echo stored values
+        run: echo "${{ steps.interactive-inputs.outputs.continue-roll-out }}"
   kampanj:
     needs: kampanj-info
     timeout-minutes: 60
