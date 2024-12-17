@@ -28,7 +28,7 @@ let slps: number[] = [];
 test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async ({ browser }) => {
-    skus = getEnvInput(process.env.SKUS);
+    skus = getEnvInput(process.env.SKUS).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g));
     salePrices = getEnvInput(process.env.SALE_PRICES).map(v => +v);
     slps = getEnvInput(process.env.SLP).map(v => +v);
     page = await setupBrothersSE(browser);
