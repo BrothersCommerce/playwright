@@ -29,10 +29,10 @@ test.describe.configure({ mode: "serial" });
 
 test.beforeAll(async ({ browser }) => {
     console.log(JSON.stringify({skus: process.env.SKUS, sale: process.env.SALE_PRICES, slps: process.env.SLP }));
-    
+
     skus = getEnvInput(process.env.SKUS).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g));
-    salePrices = getEnvInput(process.env.SALE_PRICES).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => +v);
-    slps = getEnvInput(process.env.SLP).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => +v);
+    salePrices = getEnvInput(process.env.SALE_PRICES).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => v.replace(",", "").replace(" ", "")).map(v => +v);
+    slps = getEnvInput(process.env.SLP).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => v.replace(",", "").replace(" ", "")).map(v => +v);
     page = await setupBrothersSE(browser);
 });
 

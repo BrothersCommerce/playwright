@@ -6,5 +6,5 @@ node_modules/
 /excel-reports/
 .env
 /js-files/taframreturer.js
-/js-files/test.js
-/js-files/test.txt
+js-files/test.txt
+js-files/test.js
