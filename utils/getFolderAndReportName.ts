@@ -5,7 +5,7 @@ export const getFolderAndReportName = ({ testTarget, saleStatus }: { testTarget:
     const date = timestamp.getUTCDate();
     const folderName = `${year}-${month}-${date}`;
 
-    let excelReportName = testTarget.replace("%", "procent").replace(".", "");
+    let excelReportName = testTarget.replace("%", "procent").replace(".", "").replace(" ", "");
 
     if (saleStatus) {
         excelReportName = `${excelReportName}__${saleStatus}__`;
