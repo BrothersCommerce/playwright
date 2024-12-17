@@ -24,15 +24,14 @@ on:
 jobs:
   test-kategori-accessories:
     timeout-minutes: 60
-    runs-on: ubuntu-22.04.5
+    runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.49.1-noble
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
-        node-version: 22.12.0
-        cache: "npm"
+        node-version: lts/*
     - name: Install dependencies
       run: npm ci
     - name: Run Playwright Kategori test
