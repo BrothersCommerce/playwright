@@ -52,6 +52,11 @@ jobs:
                 properties:
                   type: textarea
                   display: "Klistra in SLPs:"
+      - name: Set interactive-inputs as github ENVs
+        run: |
+          echo "SKUS=${{ steps.interactive-inputs.outputs.continue-roll-out.skus }}" >> $GITHUB_ENV
+          echo "SALE=${{ steps.interactive-inputs.outputs.continue-roll-out.sale }}" >> $GITHUB_ENV
+          echo "SLP=${{ steps.interactive-inputs.outputs.continue-roll-out.slp }}" >> $GITHUB_ENV
   kampanj:
     needs: interactive-inputs
     timeout-minutes: 60
@@ -74,9 +79,9 @@ jobs:
         # SKUS: ${{ github.event.inputs.skus }}
         # SALE_PRICES: ${{ github.event.inputs.salePrices }}
         # SLP: ${{ github.event.inputs.slps }}
-        SKUS: ${{ steps.interactive-inputs.outputs.continue-roll-out.skus }}
-        SALE_PRICES: ${{ steps.interactive-inputs.outputs.continue-roll-out.sale }}
-        SLP: ${{ steps.interactive-inputs.outputs.continue-roll-out.slp }}
+        SKUS: $SKUS
+        SALE_PRICES: $SALE
+        SLP: $SLP
         SINGLE_MAIL_TO: ${{ github.event.inputs.sendReportToOneEmail }}
         MAIL_TO: ${{ vars.MAIL_TO }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
