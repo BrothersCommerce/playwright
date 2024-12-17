@@ -37,21 +37,22 @@ jobs:
         with:
           ngrok-authtoken: ${{ secrets.NGROK_TOKEN }}
           timeout: 160
-          title: "Klistra in kampanjinfo från kampanj-excel (SKUs, Kampanjpriser, SLPs)"
+          title: "Klistra in kampanjinfo"
           interactive: |
             fields:
               - label: SKUs
                 properties:
                   type: textarea
-                  description: Klistra in SKUs att testa:
+                  description: "Klistra in SKUs att testa:"
+                  placeholder: "Paste SKUs here..."
               -label: Kampanjpriser
                 properties:
                   type: textarea
-                  description: Klistra in Kampanjpriser:
+                  description: "Klistra in Kampanjpriser:"
               - label: SLPs
                 properties:
                   type: textarea
-                  description: Klistra in senast-lägsta-priser:
+                  description: "Klistra in SLPs:"
   kampanj:
     timeout-minutes: 60
     runs-on: ubuntu-latest
