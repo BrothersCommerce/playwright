@@ -31,9 +31,9 @@ jobs:
       contents: write
       actions: write
     steps:
-      - name: Interactive-inputs step
-        uses: boasihq/interactive-inputs@v2
+      - name: Interactive inputs step
         id: interactive-inputs
+        uses: boasihq/interactive-inputs@v2
         with:
           ngrok-authtoken: ${{ secrets.NGROK_TOKEN }}
           timeout: 160
@@ -41,18 +41,18 @@ jobs:
           interactive: |
             fields:
               - label: skus
-                  properties:
-                    type: textarea
-                    description: "Klistra in SKUs att testa:"
-                    placeholder: "Paste SKUs here..."
+                properties:
+                  type: textarea
+                  description: "Klistra in SKUs att testa:"
+                  placeholder: "Paste SKUs here..."
               - label: sale
-                  properties:
-                    type: textarea
-                    description: "Klistra in Kampanjpriser:"
+                properties:
+                  type: textarea
+                  description: "Klistra in Kampanjpriser:"
               - label: slp
-                  properties:
-                    type: textarea
-                    description: "Klistra in SLPs:"
+                properties:
+                  type: textarea
+                  description: "Klistra in SLPs:"
   kampanj:
     timeout-minutes: 60
     runs-on: ubuntu-latest
