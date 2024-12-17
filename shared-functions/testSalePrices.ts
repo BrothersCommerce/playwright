@@ -1,9 +1,9 @@
-import { Prices } from "../utils/types";
+import { ExpectedPrice, Prices } from "../utils/types";
 import { parse } from 'node-html-parser';
 import { ProductPage, ExcelSLPNode } from "../utils/types";
 import { excelRow } from "../utils/excelRow";
 
-const getPrices = async (snapshot: string): Promise<Prices> => {
+const getPrices = async (snapshot: string): Promise<Prices & { productOnSale: boolean }> => {
     return new Promise(resolve => {
       const root = parse(snapshot);
     
@@ -11,22 +11,30 @@ const getPrices = async (snapshot: string): Promise<Prices> => {
     
        if (productWithSalePrices) {
         const discountNode = root.querySelector(".brProductPrice-percentageDiv-58j > span")?.text.replace(/[-,%,kr, ]/g, "") ?? "-1";
-        const saleNode = root.querySelector(".brProductPrice-finalPrice-IqD")?.text.replace(/[-,%,kr, ]/g, "") ?? "-1";
+        const saleNode = root.querySelector(".brProductPrice-finalPrice-IqD")?.text.replace(/[-,%,kr, ]/g, "");
         const regularNode = root.querySelector(".brProductPrice-regularPrice-r2Z")?.text.replace(/[-,%,kr, ]/g, "") ?? "-1";
         const slpNode = root.querySelector(".brProductPrice-priceStrike-zK8")?.text.replace(/[-,%,kr, ]/g, "") ?? "-1";
+
+        const sale = saleNode ? +saleNode : +regularNode;
+        const slp = +slpNode;
+        const regular = +regularNode;
+        const discount = +discountNode;
     
         resolve({
-          sale: +saleNode,
-          slp: +slpNode,
-          regular: +regularNode,
-          discount: +discountNode,
+          sale,
+          slp,
+          regular,
+          discount,
+          productOnSale: true
         });
        };
   
        const regularNode = root.querySelector(".brProductPrice-tab-wBq > div")?.text.replace(/[kr, ]/g, "") ?? "-1";
+       const regular = +regularNode;
        
        resolve({
-          regular: +regularNode
+          regular,
+          productOnSale: false
         });
     });
   }
@@ -41,12 +49,7 @@ export const testSalePrices = async ({
     offlineProductPages: ProductPage[],
     skus: string[],
     testTarget: string,
-    expectedPrices?: {
-        sale?: number;
-        slp?: number;
-        regular?: number;
-        discount?: number;
-    };
+    expectedPrices?: ExpectedPrice[];
     excelSLP?: ExcelSLPNode[],
 }) => {
     console.log(`SALE PRICES: ${skus.length} products to be tested in "${testTarget}"`);
@@ -88,6 +91,37 @@ export const testSalePrices = async ({
                 result.push(excelRow({message: `ERROR;${JSON.stringify(priceErrors)}`, refs: skus, i, excelSLP }));
             }
 
+        });
+    } else if (offlineProductPages && expectedPrices) {
+        offlineProductPages.map(async (productPage, i) => {
+            const { regular, sale, slp, discount, productOnSale } = await getPrices(productPage.snapshot);
+
+            const expectedSale = expectedPrices[i].sale ?? 0;
+            const expectedSlp = expectedPrices[i].slp ?? 0;
+            const expectedDiscount = Math.round(1 - (expectedSale/expectedSlp));
+
+            const priceErrors: {
+                [key: string]: {
+                    expected: number;
+                    received?: number;
+                }
+            }[] = [];
+
+            if (expectedDiscount && discount !== expectedDiscount) priceErrors.push({ "discount": { received: discount, expected: expectedDiscount }});
+            if (expectedSale && sale !== expectedSale) priceErrors.push({ "sale": { received: sale, expected: expectedSale }});
+            if (expectedSlp && slp !== expectedSlp) priceErrors.push({ "slp": { received: slp, expected: expectedSlp }});
+
+            if (!productPage.snapshot) {
+                result.push(excelRow({message: `NO PDP`, refs: skus, i, excelSLP }));
+            } else if (sale && expectedSlp < sale) {
+                result.push(excelRow({message: `SLP <= SALE`, refs: skus, i, excelSLP }));
+            } else if (!productOnSale) {
+                result.push(excelRow({message: `ERROR;Missing one or more price blocks`, refs: skus, i, excelSLP }));
+            } else if (productOnSale && priceErrors.length) {
+                result.push(excelRow({message: `ERROR;${JSON.stringify(priceErrors)}`, refs: skus, i, excelSLP }));
+            } else {
+                result.push(excelRow({message: `OK`, refs: skus, i, excelSLP }));
+            }
         });
     } else if (offlineProductPages) {
         offlineProductPages.map(async (productPage, i) => {
