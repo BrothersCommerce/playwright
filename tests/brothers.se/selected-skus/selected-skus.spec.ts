@@ -41,6 +41,7 @@ test.afterAll(async () => {
 });
 
 test(`PLP: ${testTarget}`, async () => {
+    console.log("skus in PLP: ", process.env.SKUS);
     skus = (await getEnvInput(process.env.SKUS)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g));
     salePrices = (await getEnvInput(process.env.SALE_PRICES)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => v.replace(",", "").replace(" ", "")).map(v => +v);
     slps = (await getEnvInput(process.env.SLP)).filter(sku => !sku.split("")[0].match(/[a-z,A-Z]/g)).map(v => v.replace(",", "").replace(" ", "")).map(v => +v);
