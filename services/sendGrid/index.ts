@@ -35,7 +35,7 @@ export const sendGrid = {
                     ]
                   };
 
-                console.log(`Report sent with senGrid to: ${mailAddresses}`);
+                console.log(`Report sent with senGrid to: ${to}`);
                 const sendGridResponse = await sgMail.send(msg);
             }
         });
