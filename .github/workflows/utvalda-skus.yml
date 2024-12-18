@@ -57,14 +57,16 @@ jobs:
                   type: textarea
                   display: "Klistra in SLPs:"
       - name: Set interactive-inputs as github ENVs
-        run: |
-          echo "SKUS<<EOF" >>$GITHUB_OUTPUT
+        run: >
+          echo "SKUS<<EOF" >> $GITHUB_OUTPUT
           echo ${{ steps.kampanj-inputs.outputs.skus }} >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          echo "SALE<<EOF" >>$GITHUB_OUTPUT
+
+          echo "SALE<<EOF" >> $GITHUB_OUTPUT
           echo ${{ steps.kampanj-inputs.outputs.sale }} >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          echo "SLP<<EOF" >>$GITHUB_OUTPUT
+
+          echo "SLP<<EOF" >> $GITHUB_OUTPUT
           echo ${{ steps.kampanj-inputs.outputs.slp }} >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
   kampanj:
