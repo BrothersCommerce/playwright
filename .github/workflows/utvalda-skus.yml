@@ -1,36 +1,20 @@
 name: "Manuellt: Testa kampanj"
 
 on:
-  workflow_dispatch:
-    inputs:
-      saleName:
-        description: 'Namn för testet (används i rapportfilnamnet):'
-        type: string
-        required: true
-      # skus:
-      #   description: "Copy/paste:a in SKUs som du vill testa här"
-      #   type: string
-      #   required: true
-      # salePrices:
-      #   description: "KAMPANJPRISER (Utan kampanjpriser kommer PLP användas för att testa PDP):"
-      #   type: string
-      # slps:
-      #   description: "SLPs (Utan SLPs kommer PLP användas för att testa PDP):"
-      #   type: string
-      sendReportToOneEmail:
-        description: "Skicka rapport endast till den email du skriver in här:"
-        type: string
+  workflow_dispatch
 
 run-name: "Manuellt test: Kampanj - ${{ github.event.inputs.saleName }}"
 
 jobs:
   ange-kampanj-info:
     timeout-minutes: 3
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: write
       actions: write
     outputs:
+      name: ${{ steps.set-name.outputs.NAME }}
+      email: ${{ steps.set-email.outputs.EMAIL }}
       skus: ${{ steps.set-sku.outputs.SKUS }}
       sale: ${{ steps.set-sale.outputs.SALE }}
       slp: ${{ steps.set-slp.outputs.SLP }}
@@ -44,19 +28,39 @@ jobs:
           title: "Klistra in kampanjinfo"
           interactive: |
             fields:
+              - label: name
+                properties:
+                  type: text
+                  display: "Namn för testet (används i rapportfilnamnet):"
+                  required: true
+              - label: email
+                properties:
+                  type: text
+                  display: Skicka rapporten endast till (Lämna tomt om du vill skicka till alla inlagda mottagare):
+                  placeholder: 'separera emails med "," t.exx mail1@mail.com,mail2@mail.com'
               - label: skus
                 properties:
-                  type: text
+                  type: textarea
                   display: "Klistra in SKUs att testa:"
+                  required: true
               - label: sale
                 properties:
-                  type: text
+                  type: textarea
                   display: "Klistra in Kampanjpriser:"
               - label: slp
                 properties:
-                  type: text
+                  type: textarea
                   display: "Klistra in SLPs:"
-      # - name: Set interactive-inputs as github ENVs
+      - id: set-name
+        run: |
+          echo "NAME<<EOF" >>$GITHUB_OUTPUT
+          echo "${{ steps.kampanj-inputs.outputs.name }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - id: set-email
+        run: |
+          echo "EMAIL<<EOF" >>$GITHUB_OUTPUT
+          echo "${{ steps.kampanj-inputs.outputs.email }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
       - id: set-sku
         run: |
           echo "SKUS<<EOF" >>$GITHUB_OUTPUT
@@ -75,7 +79,7 @@ jobs:
   kampanj:
     needs: ange-kampanj-info
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container:
       image: mcr.microsoft.com/playwright:v1.49.1-noble
     steps:
@@ -90,15 +94,14 @@ jobs:
       env:
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
-        SALE_NAME: ${{ github.event.inputs.saleName }}
+        SALE_NAME: ${{ needs.ange-kampanj-info.outputs.name }}
         SKUS: ${{ needs.ange-kampanj-info.outputs.skus }}
         SALE_PRICES: ${{ needs.ange-kampanj-info.outputs.sale }}
         SLP: ${{ needs.ange-kampanj-info.outputs.slp }}
-        SINGLE_MAIL_TO: ${{ github.event.inputs.sendReportToOneEmail }}
+        SINGLE_MAIL_TO: ${{ needs.ange-kampanj-info.outputs.email }}
         MAIL_TO: ${{ vars.MAIL_TO }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
         SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
-        run: echo ".ENV is populated"
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
