@@ -4,29 +4,68 @@ on:
   workflow_dispatch:
     inputs:
       saleName:
-        description: 'Namn på testet camel-case, utan mellanrum. t.ex. "skjortor299kr".'
+        description: 'Namn för testet (används i rapportfilnamnet):'
         type: string
         required: true
-      skus:
-        description: "Copy/paste:a in SKUs som du vill testa här"
-        type: string
-        required: true
-      salePrices:
-        description: "KAMPANJPRISER (Utan kampanjpriser kommer PLP användas för att testa PDP):"
-        type: string
-      slps:
-        description: "SLPs (Utan SLPs kommer PLP användas för att testa PDP):"
-        type: string
-      sendReportToOneEmail:
-        description: "Skicka rapport endast till den email du skriver in här:"
+      sendToSpecificEmails:
+        description: "Skicka rapporten endast till följande emails (separera med kommatecken):"
         type: string
 
 run-name: "Manuellt test: Kampanj - ${{ github.event.inputs.saleName }}"
 
 jobs:
+  ange-kampanj-info:
+    timeout-minutes: 3
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+      actions: write
+    outputs:
+      skus: ${{ steps.set-sku.outputs.SKUS }}
+      sale: ${{ steps.set-sale.outputs.SALE }}
+      slp: ${{ steps.set-slp.outputs.SLP }}
+    steps:
+      - name: Interactive inputs step
+        id: kampanj-inputs
+        uses: boasihq/interactive-inputs@v2
+        with:
+          ngrok-authtoken: ${{ secrets.NGROK_TOKEN }}
+          timeout: 160
+          title: "Klistra in kampanjinfo"
+          interactive: |
+            fields:
+              - label: skus
+                properties:
+                  type: textarea
+                  display: "Klistra in SKUs att testa:"
+                  required: true
+              - label: sale
+                properties:
+                  type: textarea
+                  display: "Klistra in Kampanjpriser:"
+              - label: slp
+                properties:
+                  type: textarea
+                  display: "Klistra in SLPs:"
+      - id: set-sku
+        run: |
+          echo "SKUS<<EOF" >>$GITHUB_OUTPUT
+          echo "${{ steps.kampanj-inputs.outputs.skus }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - id: set-sale
+        run: |
+          echo "SALE<<EOF" >>$GITHUB_OUTPUT
+          echo "${{ steps.kampanj-inputs.outputs.sale }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - id: set-slp
+        run: |
+          echo "SLP<<EOF" >>$GITHUB_OUTPUT
+          echo "${{ steps.kampanj-inputs.outputs.slp }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
   kampanj:
+    needs: ange-kampanj-info
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container:
       image: mcr.microsoft.com/playwright:v1.49.1-noble
     steps:
@@ -42,14 +81,13 @@ jobs:
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
         SALE_NAME: ${{ github.event.inputs.saleName }}
-        SKUS: ${{ github.event.inputs.skus }}
-        SALE_PRICES: ${{ github.event.inputs.salePrices }}
-        SLP: ${{ github.event.inputs.slps }}
-        SINGLE_MAIL_TO: ${{ github.event.inputs.sendReportToOneEmail }}
+        SKUS: ${{ needs.ange-kampanj-info.outputs.skus }}
+        SALE_PRICES: ${{ needs.ange-kampanj-info.outputs.sale }}
+        SLP: ${{ needs.ange-kampanj-info.outputs.slp }}
+        SINGLE_MAIL_TO: ${{ github.event.inputs.sendToSpecificEmails }}
         MAIL_TO: ${{ vars.MAIL_TO }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
         SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
-        run: echo ".ENV is populated"
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
