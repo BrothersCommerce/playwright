@@ -24,16 +24,16 @@ on:
 run-name: "Manuellt test: Kampanj - ${{ github.event.inputs.saleName }}"
 
 jobs:
-  kampanj-info:
+  skriv-in-kampanj-info:
     timeout-minutes: 3
     runs-on: ubuntu-latest
     permissions:
       contents: write
       actions: write
-    outputs:
-      skus: ${{ steps.kampanj-inputs.outputs.SKUS }}
-      sale: ${{ steps.kampanj-inputs.outputs.SALE }}
-      slp: ${{ steps.kampanj-inputs.outputs.SLP }}
+    # outputs:
+    #   skus: ${{ steps.kampanj-inputs.outputs.SKUS }}
+    #   sale: ${{ steps.kampanj-inputs.outputs.SALE }}
+    #   slp: ${{ steps.kampanj-inputs.outputs.SLP }}
     steps:
       - name: Interactive inputs step
         id: kampanj-inputs
@@ -56,21 +56,32 @@ jobs:
                 properties:
                   type: textarea
                   display: "Klistra in SLPs:"
-      - name: Set interactive-inputs as github ENVs
-        run: >
-          echo "SKUS<<\n" >> $GITHUB_OUTPUT
-          echo ${{ steps.kampanj-inputs.outputs.skus }} >> $GITHUB_OUTPUT
-          echo "\n" >> $GITHUB_OUTPUT
-
-          echo "SALE<<\n" >> $GITHUB_OUTPUT
-          echo ${{ steps.kampanj-inputs.outputs.sale }} >> $GITHUB_OUTPUT
-          echo "\n" >> $GITHUB_OUTPUT
-
-          echo "SLP<<\n" >> $GITHUB_OUTPUT
-          echo ${{ steps.kampanj-inputs.outputs.slp }} >> $GITHUB_OUTPUT
-          echo "\n" >> $GITHUB_OUTPUT
+      - name: Set SKUS
+        id: set-sku
+        uses: noobly314/share-data@v1
+        with:
+          share-id: share_skus
+          mode: set
+          key: sku
+          value: ${{steps.kampanj-inputs.outputs.skus }}
+      - name: Set SALE PRICES
+        id: set-sale
+        uses: noobly314/share-data@v1
+        with:
+          share-id: share_sale
+          mode: set
+          key: sale
+          value: ${{steps.kampanj-inputs.outputs.sale }}
+      - name: Set SLP
+        id: set-slp
+        uses: noobly314/share-data@v1
+        with:
+          share-id: share_slp
+          mode: set
+          key: slp
+          value: ${{steps.kampanj-inputs.outputs.slp }}
   kampanj:
-    needs: [kampanj-info]
+    needs: skriv-in-kampanj-info
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
@@ -82,15 +93,36 @@ jobs:
         node-version: lts/*
     - name: Install dependencies
       run: npm ci
+    - name: Get SKUS
+      id: get_skus
+      uses: noobly314/share-data@v1
+      with:
+        share-id: skus_id
+        mode: get
+        key: skus
+    - name: Get SALE PRICES
+      id: get_sale
+      uses: noobly314/share-data@v1
+      with:
+        share-id: sale_id
+        mode: get
+        key: sale
+    - name: Get SLP
+      id: get_slp
+      uses: noobly314/share-data@v1
+      with:
+        share-id: slp_id
+        mode: get
+        key: slp
     - name: Run Playwright kampanj test
       run: npx playwright test selected-skus.spec.ts --project chromium
       env:
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
         SALE_NAME: ${{ github.event.inputs.saleName }}
-        SKUS: ${{ needs.kampanj-inputs.outputs.SKUS }}
-        SALE_PRICES: ${{ needs.kampanj-inputs.outputs.SALE }}
-        SLP: ${{ needs.kampanj-inputs.outputs.SLP }}
+        SKUS: ${{ steps.get_skus.outputs.data }}
+        SALE_PRICES: ${{ steps.get_sale.outputs.data }}
+        SLP: ${{ steps.get_slp.outputs.data }}
         SINGLE_MAIL_TO: ${{ github.event.inputs.sendReportToOneEmail }}
         MAIL_TO: ${{ vars.MAIL_TO }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
