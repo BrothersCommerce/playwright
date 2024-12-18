@@ -39,15 +39,18 @@ jobs:
                 properties:
                   type: textarea
                   display: "Klistra in SKUs att testa:"
+                  placeholder: "Måste anges"
                   required: true
               - label: sale
                 properties:
                   type: textarea
                   display: "Klistra in Kampanjpriser:"
+                  placeholder: "Priser från PLP kommer användas om kampanjpriser ej anges"
               - label: slp
                 properties:
                   type: textarea
                   display: "Klistra in SLPs:"
+                  placeholder: "Priser från PLP kommer användas om SLPs ej anges"
               - label: qty
                 properties:
                   type: boolean
