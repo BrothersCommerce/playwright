@@ -46,15 +46,15 @@ jobs:
             fields:
               - label: skus
                 properties:
-                  type: textarea
+                  type: text
                   display: "Klistra in SKUs att testa:"
               - label: sale
                 properties:
-                  type: textarea
+                  type: text
                   display: "Klistra in Kampanjpriser:"
               - label: slp
                 properties:
-                  type: textarea
+                  type: text
                   display: "Klistra in SLPs:"
       # - name: Set interactive-inputs as github ENVs
       - id: set-sku
