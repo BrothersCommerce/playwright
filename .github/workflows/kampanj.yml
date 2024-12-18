@@ -90,7 +90,7 @@ jobs:
     - name: Install dependencies
       run: npm ci
     - name: Run Playwright kampanj test
-      run: npx playwright test kampanj.spec.ts --project chromium
+      run: npx playwright test github-actions-kampanj.spec.ts --project chromium
       env:
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
