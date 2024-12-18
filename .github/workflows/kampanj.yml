@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       saleName:
-        description: 'Namn för testet (används i rapportfilnamnet):'
+        description: 'Ange ett namn för testet:'
         type: string
         required: true
       sendToSpecificEmails:
@@ -51,7 +51,7 @@ jobs:
               - label: qty
                 properties:
                   type: boolean
-                  display: "Testa med lagersaldo (standard: true):"
+                  display: "Testa med lagersaldo:"
                   defaultValue: true
       - id: set-sku
         run: |
