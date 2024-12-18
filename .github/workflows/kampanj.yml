@@ -24,6 +24,7 @@ jobs:
       skus: ${{ steps.set-sku.outputs.SKUS }}
       sale: ${{ steps.set-sale.outputs.SALE }}
       slp: ${{ steps.set-slp.outputs.SLP }}
+      qty: ${{ steps.set-qty.outputs.QTY }}
     steps:
       - name: Interactive inputs step
         id: kampanj-inputs
@@ -47,6 +48,11 @@ jobs:
                 properties:
                   type: textarea
                   display: "Klistra in SLPs:"
+              - label: qty
+                properties:
+                  type: boolean
+                  display: "Testa med lagersaldo (standard: true):"
+                  defaultValue: true
       - id: set-sku
         run: |
           echo "SKUS<<EOF" >>$GITHUB_OUTPUT
@@ -62,7 +68,12 @@ jobs:
           echo "SLP<<EOF" >>$GITHUB_OUTPUT
           echo "${{ steps.kampanj-inputs.outputs.slp }}" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-  kampanj:
+      - id: set-qty
+        run: |
+          echo "QTY<<EOF" >>$GITHUB_OUTPUT
+          echo "${{ steps.kampanj-inputs.outputs.qty }}" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+  testa-kampanj:
     needs: ange-kampanj-info
     timeout-minutes: 60
     runs-on: ubuntu-22.04
@@ -76,7 +87,7 @@ jobs:
     - name: Install dependencies
       run: npm ci
     - name: Run Playwright kampanj test
-      run: npx playwright test selected-skus.spec.ts --project chromium
+      run: npx playwright test kampanj.spec.ts --project chromium
       env:
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
@@ -84,6 +95,7 @@ jobs:
         SKUS: ${{ needs.ange-kampanj-info.outputs.skus }}
         SALE_PRICES: ${{ needs.ange-kampanj-info.outputs.sale }}
         SLP: ${{ needs.ange-kampanj-info.outputs.slp }}
+        QTY: ${{ needs.ange-kampanj-info.outputs.qty }}
         SINGLE_MAIL_TO: ${{ github.event.inputs.sendToSpecificEmails }}
         MAIL_TO: ${{ vars.MAIL_TO }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
@@ -100,5 +112,3 @@ jobs:
         name: excel-report
         path: excel-reports/
         retention-days: 1
-
-  

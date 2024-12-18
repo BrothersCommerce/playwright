@@ -74,7 +74,7 @@ test(`PDP sale prices "${testTarget}"`, async () => {
             sale,
             slp
         })
-    }
+    };
 
     const data = await testSalePrices({ offlineProductPages, skus, testTarget, expectedPrices });
     excelRows.push({ label: data.label, result: data.result });
@@ -86,6 +86,7 @@ test.skip(`PDP regular price "${testTarget}`, async () => {
 });
 
 test(`SKU stock QTY: ${testTarget}`, async () => {
+    test.skip(process.env.QTY === "false", "Test stock qty skipped becuase of user input.");
     const { result, label, allSimpleSkus } = await testMagentoStockQty({ offlineProductPages, testTarget, skus });
     excelRows.push({ label, result });
     
