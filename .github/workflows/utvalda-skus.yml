@@ -31,12 +31,12 @@ jobs:
               - label: name
                 properties:
                   type: text
-                  display: "Namn för testet (används i rapportfilnamnet):"
+                  display: "Rapportnamn:"
                   required: true
               - label: email
                 properties:
                   type: text
-                  display: Skicka rapporten endast till (Lämna tomt om du vill skicka till alla inlagda mottagare):
+                  display: Skicka rapporten endast till:
                   placeholder: 'separera emails med "," t.ex. mail1@mail.com,mail2@mail.com'
               - label: skus
                 properties:
