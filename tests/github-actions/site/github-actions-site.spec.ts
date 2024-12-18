@@ -6,7 +6,6 @@ import { setupBrothersSE } from "../../../shared-functions/setupBrothersSE";
 import { excelReportMulti } from "../../../utils/excelReportMulti";
 import { testPLP } from "../../../shared-functions/testPLP";
 import { testPDP } from "../../../shared-functions/testPDP";
-import { testRegularPricesPDP } from "../../../shared-functions/testRegularPricesPDP";
 import { testMagentoStatus } from "../../../shared-functions/testMagentoStatus";
 import { testMagentoConnectedSkus } from "../../../shared-functions/testConenctedStatus";
 import { setMagentoSlp } from "../../../shared-functions/setMagentoSlp";
@@ -22,23 +21,6 @@ test.describe.configure({ mode: "serial" });
 test.beforeAll(async ({ browser }) => {
     page = await setupBrothersSE(browser);
 
-    const getCategoryCode = (): Promise<number> => {
-        return new Promise((resolve, reject) => {
-        const codeEntry = MAGENTO_ATTR.categories.find(cat => cat.label.toLowerCase() === testTarget.toLowerCase());
-        if (codeEntry && codeEntry.value) {
-          resolve(codeEntry.value);
-        }
-  
-        reject(0);
-      });
-    };
-
-    const categoryCode = await getCategoryCode();
-
-    const removeNotOnWebsiteSkus = process.env?.REMOVE_SKUS ?? "false";
-
-    console.log("Remove SKUs with out-of-stock, no childs and identifiers: ", removeNotOnWebsiteSkus)
-
     const { skus: skusToTest, noChilds, outOfStock } = await service.magento.getFilteredProducts({
         filters: [
                 {
@@ -52,34 +34,6 @@ test.beforeAll(async ({ browser }) => {
             ],
             removeNotOnWebsiteSkus: "false"
     });
-
-    const printExcludedSKUs = () => {
-        const removedNoChilds = (noChilds && noChilds.length) ?? 0;
-        const removedOutOfStock = (outOfStock && outOfStock.length) ?? 0;
-        const removedSkus = removedNoChilds + removedOutOfStock;
-        console.log("");
-        console.log("");
-        console.log(`${removedSkus} SKUs removed from test. ${removedSkus > 0 ? "Reasons and SKUs listed bellow:" : ""}`);
-        console.log("*********************************************************");
-        if (noChilds && noChilds.length) {
-            console.log("");
-            console.log("NO SIMPLE PRODUCTS CONNECTED:");
-            console.log("");
-            for (const sku of noChilds) console.log(sku);
-        }
-
-        if (outOfStock && outOfStock.length) {
-            console.log("");
-            console.log("OUT OF STOCK:");
-            console.log("");
-            for (const sku of outOfStock) console.log(sku);
-        }
-        console.log("");
-    }
-
-    if (removeNotOnWebsiteSkus) {
-        printExcludedSKUs();
-    }
 
     skus = skusToTest;
 

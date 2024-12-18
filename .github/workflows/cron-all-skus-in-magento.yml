@@ -2,7 +2,7 @@ name: "CRON: alla SKUs i Magento"
 on:
   workflow_dispatch:
 
-run-name: "CRON test: Kategori - All SKUs in Magneto (status=enabled, visibility=catalogAndSearch)"
+run-name: "All SKUs in Magneto (status=enabled, visibility=catalogAndSearch)"
 
 jobs:
   test-all-skus-in-magento:
