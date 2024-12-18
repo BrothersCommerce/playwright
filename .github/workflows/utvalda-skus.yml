@@ -24,16 +24,16 @@ on:
 run-name: "Manuellt test: Kampanj - ${{ github.event.inputs.saleName }}"
 
 jobs:
-  kampanj-info:
+  ange-kampanj-info:
     timeout-minutes: 3
     runs-on: ubuntu-latest
     permissions:
       contents: write
       actions: write
     outputs:
-      skus: ${{ steps.kampanj-inputs.outputs.SKUS }}
-      sale: ${{ steps.kampanj-inputs.outputs.SALE }}
-      slp: ${{ steps.kampanj-inputs.outputs.SLP }}
+      skus: ${{ steps.set-sku.outputs.SKUS }}
+      sale: ${{ steps.set-sale.outputs.SALE }}
+      slp: ${{ steps.set-slp.outputs.SLP }}
     steps:
       - name: Interactive inputs step
         id: kampanj-inputs
@@ -56,19 +56,24 @@ jobs:
                 properties:
                   type: textarea
                   display: "Klistra in SLPs:"
-      - name: Set interactive-inputs as github ENVs
+      # - name: Set interactive-inputs as github ENVs
+      - id: set-sku
         run: |
           echo "SKUS<<EOF" >>$GITHUB_OUTPUT
           echo "${{ steps.kampanj-inputs.outputs.skus }}" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+      - id: set-sale
+        run: |
           echo "SALE<<EOF" >>$GITHUB_OUTPUT
           echo "${{ steps.kampanj-inputs.outputs.sale }}" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+      - id: set-slp
+        run: |
           echo "SLP<<EOF" >>$GITHUB_OUTPUT
           echo "${{ steps.kampanj-inputs.outputs.slp }}" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
   kampanj:
-    needs: [kampanj-info]
+    needs: ange-kampanj-info
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
@@ -86,9 +91,9 @@ jobs:
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
         SALE_NAME: ${{ github.event.inputs.saleName }}
-        SKUS: ${{ needs.kampanj-inputs.outputs.SKUS }}
-        SALE_PRICES: ${{ needs.kampanj-inputs.outputs.SALE }}
-        SLP: ${{ needs.kampanj-inputs.outputs.SLP }}
+        SKUS: ${{ needs.ange-kampanj-info.outputs.skus }}
+        SALE_PRICES: ${{ needs.ange-kampanj-info.outputs.sale }}
+        SLP: ${{ needs.ange-kampanj-info.outputs.slp }}
         SINGLE_MAIL_TO: ${{ github.event.inputs.sendReportToOneEmail }}
         MAIL_TO: ${{ vars.MAIL_TO }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
