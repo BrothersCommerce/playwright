@@ -58,9 +58,15 @@ jobs:
                   display: "Klistra in SLPs:"
       - name: Set interactive-inputs as github ENVs
         run: |
-          echo SKUS="${{ steps.kampanj-inputs.outputs.skus }}" >> "$GITHUB_OUTPUT"
-            echo SALE="${{ steps.kampanj-inputs.outputs.sale }}" >> "$GITHUB_OUTPUT"
-            echo SLP="${{ steps.kampanj-inputs.outputs.slp }}" >> "$GITHUB_OUTPUT"
+          echo "SKUS<<EOF" >>$GITHUB_OUTPUT
+          echo ${{ steps.kampanj-inputs.outputs.skus }} >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "SALE<<EOF" >>$GITHUB_OUTPUT
+          echo ${{ steps.kampanj-inputs.outputs.sale }} >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "SLP<<EOF" >>$GITHUB_OUTPUT
+          echo ${{ steps.kampanj-inputs.outputs.slp }} >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
   kampanj:
     needs: [kampanj-info]
     timeout-minutes: 60
@@ -80,9 +86,9 @@ jobs:
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
         SALE_NAME: ${{ github.event.inputs.saleName }}
-        SKUS: ${{ needs.kampanj-inputs.outputs.skus }}
-        SALE_PRICES: ${{ needs.kampanj-inputs.outputs.sale }}
-        SLP: ${{ needs.kampanj-inputs.outputs.slp }}
+        SKUS: ${{ needs.kampanj-inputs.outputs.SKUS }}
+        SALE_PRICES: ${{ needs.kampanj-inputs.outputs.SALE }}
+        SLP: ${{ needs.kampanj-inputs.outputs.SLP }}
         SINGLE_MAIL_TO: ${{ github.event.inputs.sendReportToOneEmail }}
         MAIL_TO: ${{ vars.MAIL_TO }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
