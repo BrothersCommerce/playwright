@@ -37,7 +37,7 @@ jobs:
                 properties:
                   type: text
                   display: Skicka rapporten endast till (Lämna tomt om du vill skicka till alla inlagda mottagare):
-                  placeholder: 'Separera emails med \",\" t.ex. mail1@mail.com,mail2@mail.com'
+                  placeholder: 'Separera emails med kommatecken'
               - label: skus
                 properties:
                   type: textarea
