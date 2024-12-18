@@ -1,7 +1,15 @@
 name: "Manuellt: Testa kampanj"
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      saleName:
+        description: 'Namn för testet (används i rapportfilnamnet):'
+        type: string
+        required: true
+      sendToSpecificEmails:
+        description: "Skicka rapporten endast till följande emails (separera med kommatecken):"
+        type: string
 
 run-name: "Manuellt test: Kampanj - ${{ github.event.inputs.saleName }}"
 
@@ -13,8 +21,6 @@ jobs:
       contents: write
       actions: write
     outputs:
-      name: ${{ steps.set-name.outputs.NAME }}
-      email: ${{ steps.set-email.outputs.EMAIL }}
       skus: ${{ steps.set-sku.outputs.SKUS }}
       sale: ${{ steps.set-sale.outputs.SALE }}
       slp: ${{ steps.set-slp.outputs.SLP }}
@@ -28,16 +34,6 @@ jobs:
           title: "Klistra in kampanjinfo"
           interactive: |
             fields:
-              - label: name
-                properties:
-                  type: text
-                  display: "Namn för testet (används i rapportfilnamnet):"
-                  required: true
-              - label: email
-                properties:
-                  type: text
-                  display: Skicka rapporten endast till (Lämna tomt om du vill skicka till alla inlagda mottagare):
-                  placeholder: 'Separera emails med kommatecken'
               - label: skus
                 properties:
                   type: textarea
@@ -51,16 +47,6 @@ jobs:
                 properties:
                   type: textarea
                   display: "Klistra in SLPs:"
-      - id: set-name
-        run: |
-          echo "NAME<<EOF" >>$GITHUB_OUTPUT
-          echo "${{ steps.kampanj-inputs.outputs.name }}" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-      - id: set-email
-        run: |
-          echo "EMAIL<<EOF" >>$GITHUB_OUTPUT
-          echo "${{ steps.kampanj-inputs.outputs.email }}" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
       - id: set-sku
         run: |
           echo "SKUS<<EOF" >>$GITHUB_OUTPUT
@@ -94,11 +80,11 @@ jobs:
       env:
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
-        SALE_NAME: ${{ needs.ange-kampanj-info.outputs.name }}
+        SALE_NAME: ${{ github.event.inputs.saleName }}
         SKUS: ${{ needs.ange-kampanj-info.outputs.skus }}
         SALE_PRICES: ${{ needs.ange-kampanj-info.outputs.sale }}
         SLP: ${{ needs.ange-kampanj-info.outputs.slp }}
-        SINGLE_MAIL_TO: ${{ needs.ange-kampanj-info.outputs.email }}
+        SINGLE_MAIL_TO: ${{ github.event.inputs.sendToSpecificEmails }}
         MAIL_TO: ${{ vars.MAIL_TO }}
         MAGENTO_TOKEN: ${{ secrets.MAGENTO_TOKEN }}
         SEND_GRID_API_KEY: ${{ secrets.SEND_GRID_API_KEY }}
