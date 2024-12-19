@@ -62,7 +62,7 @@ test(`PDP: ${testTarget}`, async () => {
 });
 
 test(`PDP sale prices "${testTarget}"`, async () => {
-    test.skip(!salePrices && !slps, "SKip test for sale prices because no sale data was provided.");
+    test.skip(!salePrices.length && !slps.length, "PDP sale prices: SKip test for sale prices because no sale data was provided.");
 
     const expectedPrices: ExpectedPrice[] = [];
 
@@ -80,7 +80,8 @@ test(`PDP sale prices "${testTarget}"`, async () => {
     excelRows.push({ label: data.label, result: data.result });
 });
 
-test.skip(`PDP regular price "${testTarget}`, async () => {
+test(`PDP regular price "${testTarget}`, async () => {
+    test.skip(salePrices.length, "PDP regular price: Skip test because user wanted to test SALE PRICES");
     const data = await testRegularPricesPDP({ testTarget, skus, offlineProductPages });
     excelRows.push({ label: data.label, result: data.result });
 });
