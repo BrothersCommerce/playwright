@@ -17,9 +17,9 @@ export const sendGrid = {
                 throw new Error(error);
             } else if (testReport) {
                 const mailAddresses = (process.env.MAIL_TO ?? "").split(",");
-                const singleMailAddress = process.env.SINGLE_MAIL_TO ?? "";
+                const overrideDefaultReceivers = process.env.SINGLE_MAIL_TO ?? "";
 
-                const to = singleMailAddress.length > 1 ? singleMailAddress : mailAddresses;
+                const to = overrideDefaultReceivers.length > 1 ? overrideDefaultReceivers.split(",") : mailAddresses;
                 const msg: MailDataRequired = {
                     to,
                     from: 'it@brothers.se',

@@ -1,7 +1,6 @@
-name: "CRON: alla SKUs i Magento"
+name: "Manuellt: alla SKUs i Magento"
 on:
-  schedule:
-    - cron: '00 00 * * 1-5'
+    workflow_dispatch
 
 run-name: "All SKUs in Magneto (status=enabled, visibility=catalogAndSearch)"
 
