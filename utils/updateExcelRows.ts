@@ -4,7 +4,7 @@ function updatePLPRow(PLP: ExcelRow, test: ExcelRow, matchStatus: string, change
     const rnbGuard: { skus: string[], labels: string[]} = { skus: [], labels: [ "qty" ]};
 
     PLP.result = [...PLP.result].map((entry, i) => {
-        if (test.result[i][2] === matchStatus && !rnbGuard.labels.includes(test.label.toLowerCase())) {
+        if (test.result[i][2] === matchStatus && !rnbGuard.skus.includes(test.result[i][0])) {
             const updatedEntry = [...entry];
             updatedEntry[2] = changeSLPstatus?.length ? changeSLPstatus : "_error_";
             return updatedEntry;
