@@ -3,7 +3,7 @@ on:
   schedule:
     - cron: '00 00 * * 1-5'
 
-run-name: "All SKUs in Magneto (status=enabled, visibility=catalogAndSearch)"
+run-name: "CRON: All SKUs in Magneto (status=enabled, visibility=catalogAndSearch)"
 
 jobs:
   test-all-skus-in-magento:
