@@ -36,7 +36,8 @@ test.beforeAll(async ({ browser }) => {
 });
 
 test.afterAll(async () => {
-    await excelReportMulti({ excelRows, testTarget, duplicatedRows, saleStatus: "active" });
+    const saleStatus = (salePrices.length && slps.length) ? "active" : "inactive";
+    await excelReportMulti({ excelRows, testTarget, duplicatedRows, saleStatus });
     await page.close();
 });
 
