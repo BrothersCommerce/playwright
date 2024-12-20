@@ -13,6 +13,7 @@ import { testChildrenToNotHaveIdentifiers } from "../../../shared-functions/test
 import { testMagentoConnectedSkus } from "../../../shared-functions/testConenctedStatus";
 import { testRegularPricesPDP } from "../../../shared-functions/testRegularPricesPDP";
 import { setMagentoSlp } from "../../../shared-functions/setMagentoSlp";
+import { testRelevance } from "../../../shared-functions/testRelevance";
 
 const mitigatedErrors = getMitigatedErrors(`
 `);
@@ -73,6 +74,9 @@ test(`SKU status: ${testTarget}`, async () => {
 
     const connected = await testMagentoConnectedSkus({ resultConnectedSkus: status.resultConnectedSkus, testTarget, skus });
     excelRows.push({ label: connected.label, result: connected.result });
+
+    const relevance = await testRelevance({ resultRelevance: status.resultRelevance, testTarget, skus });
+    excelRows.push({ label: relevance.label, result: relevance.result });
 
     offlineProductPages = await setMagentoSlp({ result: status.resultMagentoSlp, offlineProductPages, testTarget, skus });
 });

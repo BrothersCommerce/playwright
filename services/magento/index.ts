@@ -153,7 +153,7 @@ export const magento = {
         const connectedWithSku = (res.custom_attributes.find(ca => ca.attribute_code === "brothers_connected_products") ?? { value: ""}).value as string;
         const connectedProductsCategoryTag = res.custom_attributes.some(ca => ca.attribute_code === "category_ids" && ca.value.includes("1904"));
 
-        const getConnectedStatus = () => {
+        function getConnectedStatus() {
             if (connectedWithSku || connectedProductsCategoryTag) {
                 return connectedProductsCategoryTag ? "CONNECTED" : connectedWithSku;
             }
@@ -161,13 +161,27 @@ export const magento = {
             return "";
         }
 
+        function getRetireStatus() {
+            const createdAt = new Date(res.created_at.split(" ")[0]).getTime();
+            const productAge = new Date(new Date().toISOString().split("T")[0]).getTime() - createdAt;
+            const millisecondsMonth = 2628000000;
+            const months = parseInt((process.env.SKU_MAX_AGE_IN_MONTHS ?? "24"), 10);
+            const productRetireAge = millisecondsMonth * months;
+
+            // const productRelevance = productAge >= productRetireAge ? "RETIRE" : "OK";
+            const productRelevance = `${Math.round(productAge/(millisecondsMonth*12))}`;
+
+            return productRelevance;
+        }
+
         const connectedSku = getConnectedStatus();
         const magentoSlp = +(res.custom_attributes.find(ca => ca.attribute_code === "last_lowest_price") ?? { value: "" }).value as number;
+        const productRelevance = getRetireStatus();
 
         let status = "ERROR";
         status = res.status === 1 ? "ENABLED" : "DISABLED";
         
-        return { status, connectedSku, sku, magentoSlp };
+        return { status, connectedSku, sku, magentoSlp, productRelevance };
     },
     getSimpleProducts: async (sku: string): Promise<{ simpleProductSkus: string[] }> => {
         const endpoint = `/configurable-products/${sku}/children`;
