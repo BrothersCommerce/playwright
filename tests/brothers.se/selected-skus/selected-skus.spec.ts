@@ -19,9 +19,18 @@ const mitigatedErrors = getMitigatedErrors(`
 
 // copy/paste SKUs between the `` to test a selected number of SKUs
 const skus = `
-3033467-3010
-3033468-3069
-3033470-3069
+3033478-3010
+3033479-3010
+3033479-3050
+3033479-3068
+3033480-3030
+3033480-3010
+3033455-3068
+3033455-3003
+3033461-3068
+3033461-3010
+3033482-3010
+3033277-3010
 `.split(/\n/).filter(v => v.length > 0);
 
 let { page, excelRows, testTarget, duplicatedRows, offlineProductPages, excelSLP, magentoData } = setupTestData("selected-skus");
