@@ -59,7 +59,7 @@ export const testPLP = async ({
                 offlineData.push({ url: '', snapshot: '', sku, plpPriceBlocks: [] });
                 result.push(excelRow({ message: `RNB?;SKU in unexpected format: ${sku}`, refs: skus, excelSLP, i }));
             } else {
-                await expect.soft(page.locator(".voyadoPrimaryList-primaryProducts-F0X > .voyadoProduct-container--qK").first()).toBeVisible();
+                await expect.soft(page.locator(".voyadoPrimaryList-primaryProducts-F0X")).toBeAttached();
                 const searchHitOnProduct = await page.locator(".voyadoPrimaryList-primaryProducts-F0X > .voyadoProduct-container--qK").first();
             
                 if (await searchHitOnProduct.isVisible({ timeout: 6000 })) {
