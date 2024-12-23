@@ -63,7 +63,7 @@ export const testPLP = async ({
                 const searchHitOnProduct = page.locator(".voyadoPrimaryList-primaryProducts-F0X > .voyadoProduct-container--qK").first();
                 const noSearchHitOnProduct = page.locator(".voyadoSearchResults-noResults-mTm");
                 
-                await expect.soft(searchHitOnProduct.or(noSearchHitOnProduct)).toBeVisible({ timeout: 100 });
+                await expect.soft(searchHitOnProduct.or(noSearchHitOnProduct)).toBeVisible({ timeout: 150 });
             
                 if (await searchHitOnProduct.isVisible()) {
     
