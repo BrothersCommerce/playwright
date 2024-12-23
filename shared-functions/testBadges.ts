@@ -81,11 +81,19 @@ export const testBadges = async ({
             result.push(excelRow({ message: "OK", refs: skus, i }));
           }
         } else {
+          const topRightApprovedValues = ["Nyhet!"];
+          
           // We only check topRight atm because this is the badge that contains the sale badge
+          if (topRight && topRightApprovedValues.includes(topRight)) {
+            return result.push(excelRow({ message: `_error_;${JSON.stringify({ topRight })}`, refs: skus, i }));
+          }
+
           if (topRight && topRight.length) {
-            result.push(excelRow({ message: `ERROR`, refs: skus, i }));
-          } else if (!topRight) {
-            result.push(excelRow({ message: "OK", refs: skus, i }));
+            return result.push(excelRow({ message: `ERROR`, refs: skus, i }));
+          }
+
+          if (!topRight) {
+            return result.push(excelRow({ message: "OK", refs: skus, i }));
           }
         }
       });
