@@ -7,6 +7,9 @@ on:
         description: 'Ange ett namn för testet:'
         type: string
         required: true
+      topRightBadge:
+        description: 'Ange badgetext t.ex. "Deal" (lämna tomt om du vill testa att PDP inte har badge i övre högra hörnet)'
+        type: string
       sendToSpecificEmails:
         description: "Skicka rapporten endast till följande emails (separera med kommatecken):"
         type: string
@@ -95,6 +98,7 @@ jobs:
         ENV_GITHUB_ACTION: ${{ vars.ENV_GITHUB_ACTION }}
         MAGENTO_BASE_URL: ${{ vars.MAGENTO_BASE_URL }}
         SALE_NAME: ${{ github.event.inputs.saleName }}
+        TOP_RIGHT_BADGE: ${{ github.event.inputs.topRightBadge }}
         SKUS: ${{ needs.ange-kampanj-info.outputs.skus }}
         SALE_PRICES: ${{ needs.ange-kampanj-info.outputs.sale }}
         SLP: ${{ needs.ange-kampanj-info.outputs.slp }}

@@ -13,8 +13,9 @@ import { testChildrenToNotHaveIdentifiers } from "../../../shared-functions/test
 import { testMagentoConnectedSkus } from "../../../shared-functions/testConenctedStatus";
 import { testRegularPricesPDP } from "../../../shared-functions/testRegularPricesPDP";
 import { setMagentoSlp } from "../../../shared-functions/setMagentoSlp";
-import { ExpectedPrice } from "../../../utils/types";
+import { ExpectedBadges, ExpectedPrice } from "../../../utils/types";
 import { testRelevance } from "../../../shared-functions/testRelevance";
+import { testBadges } from "../../../shared-functions/testBadges";
 
 const mitigatedErrors = getMitigatedErrors(`
 `);
@@ -64,7 +65,7 @@ test(`SKU status: ${testTarget}`, async () => {
 test(`PDP: ${testTarget}`, async () => {
     const data = await testPDP({ offlineProductPages, testTarget, skus });
     excelRows.push({ label: data.label, result: data.result });
-});
+}); 
 
 test(`PDP sale prices "${testTarget}"`, async () => {
     test.skip(!salePrices.length && !slps.length, "PDP sale prices: SKip test for sale prices because no sale data was provided.");
@@ -85,9 +86,18 @@ test(`PDP sale prices "${testTarget}"`, async () => {
     excelRows.push({ label: data.label, result: data.result });
 });
 
-test(`PDP regular price "${testTarget}`, async () => {
+test(`PDP regular price "${testTarget}"`, async () => {
     test.skip(salePrices.length, "PDP regular price: Skip test because user wanted to test SALE PRICES");
     const data = await testRegularPricesPDP({ testTarget, skus, offlineProductPages });
+    excelRows.push({ label: data.label, result: data.result });
+});
+
+test(`PDP Badges "${testTarget}"`, async () => {
+    const expectedBadges: ExpectedBadges = {
+        topRight: process.env.TOP_RIGHT_BADGE
+    };
+
+    const data = await testBadges({ testTarget, offlineProductPages, skus, expectedBadges });
     excelRows.push({ label: data.label, result: data.result });
 });
 

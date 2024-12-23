@@ -41,8 +41,8 @@ export const testBadges = async ({
 }:{
     testTarget: string;
     skus: string[];
-    page: Page;
-    excelSLP: ExcelSLPNode[];
+    page?: Page;
+    excelSLP?: ExcelSLPNode[];
     useSLPasRegularPrice?: boolean;
     expectedBadges?: ExpectedBadges;
     offlineProductPages: ProductPage[];
@@ -64,21 +64,32 @@ export const testBadges = async ({
         const { topLeft, topRight, bottomLeft, bottomRight, pageNotFound } = await getBadges(snapshot);
         const { topLeft: expectedTopLeft, topRight: expectedTopRight, bottomLeft: expectedBottomLeft, bottomRight: expectedBottomRight } = expectedBadges;
 
-        if (expectedTopLeft && topLeft !== expectedTopLeft) badgeErrors.push({ "topLeft": { received: topLeft, expected: expectedTopLeft } });
-        if (expectedTopRight && topRight !== expectedTopRight) badgeErrors.push({ "topRight": { received: topRight, expected: expectedTopRight } });
-        if (expectedBottomLeft && bottomLeft !== expectedBottomLeft) badgeErrors.push({ "bottomLeft": { received: expectedBottomLeft, expected: bottomLeft } });
-        if (expectedBottomRight && bottomRight !== expectedBottomRight) badgeErrors.push({ "bottomRight": { received: bottomRight, expected: expectedBottomRight } });
 
         if (!snapshot || pageNotFound) {
-          result.push(excelRow({ message: "NO PDP", refs: skus, i, excelSLP }));
-        } else if (badgeErrors.length) {
-          result.push(excelRow({ message: `ERROR;${JSON.stringify(badgeErrors)}`, refs: skus, i, excelSLP }));
-        } else {
-          result.push(excelRow({ message: "OK", refs: skus, i, excelSLP }));
+          return result.push(excelRow({ message: "NO PDP", refs: skus, i }));
         }
 
+        if (shouldHaveBadge) {
+          if (expectedTopLeft && topLeft !== expectedTopLeft) badgeErrors.push({ "topLeft": { received: topLeft, expected: expectedTopLeft } });
+          if (expectedTopRight && topRight !== expectedTopRight) badgeErrors.push({ "topRight": { received: topRight, expected: expectedTopRight } });
+          if (expectedBottomLeft && bottomLeft !== expectedBottomLeft) badgeErrors.push({ "bottomLeft": { received: expectedBottomLeft, expected: bottomLeft } });
+          if (expectedBottomRight && bottomRight !== expectedBottomRight) badgeErrors.push({ "bottomRight": { received: bottomRight, expected: expectedBottomRight } });
+
+          if (badgeErrors.length) {
+            result.push(excelRow({ message: `ERROR;${JSON.stringify(badgeErrors)}`, refs: skus, i }));
+          } else {
+            result.push(excelRow({ message: "OK", refs: skus, i }));
+          }
+        } else {
+          // We only check topRight atm because this is the badge that contains the sale badge
+          if (topRight && topRight.length) {
+            result.push(excelRow({ message: `ERROR`, refs: skus, i }));
+          } else if (!topRight) {
+            result.push(excelRow({ message: "OK", refs: skus, i }));
+          }
+        }
       });
-    } else {
+    } else if (page) {
       for (let i = 0; i < skus.length; i++) {
         await page.goto(`https://www.brothers.se/search.html?query=${skus[i]}`);
         const searchHitOnProduct = await page.locator(".voyadoPrimaryList-primaryProducts-F0X > .voyadoProduct-container--qK").count();

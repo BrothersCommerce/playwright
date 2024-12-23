@@ -15,7 +15,7 @@ export const testRegularPricesPDP = async ({
 }): Promise<{ label: string, result: string[][], regularPrices: string[][] }> => {
   return new Promise (async (resolve) => {
     console.log(`${offlineProductPages.length} products in sale "${testTarget}" to be tested:`);
-    console.log("Products should have regulare price and no top-right badge.")
+    console.log("Products should have regulare price.")
     const result: string[][] = [];
     const regularPrices: string[][] = [];
 
