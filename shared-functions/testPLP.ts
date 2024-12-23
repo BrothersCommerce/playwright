@@ -59,9 +59,13 @@ export const testPLP = async ({
                 offlineData.push({ url: '', snapshot: '', sku, plpPriceBlocks: [] });
                 result.push(excelRow({ message: `RNB?;SKU in unexpected format: ${sku}`, refs: skus, excelSLP, i }));
             } else {
+                
                 const searchHitOnProduct = page.locator(".voyadoPrimaryList-primaryProducts-F0X > .voyadoProduct-container--qK").first();
+                const noSearchHitOnProduct = page.locator(".voyadoSearchResults-noResults-mTm");
+                
+                await expect.soft(searchHitOnProduct.or(noSearchHitOnProduct)).toBeVisible({ timeout: 100 });
             
-                if (await searchHitOnProduct.isVisible({ timeout: 6000 })) {
+                if (await searchHitOnProduct.isVisible()) {
     
                     const searchContainer = await page.$(".voyadoPrimaryList-primarySection-US2");
                     const snapshotPLP = parse(await (searchContainer as ElementHandle<HTMLElement>).innerHTML());
@@ -120,7 +124,7 @@ export const testPLP = async ({
                                 result.push(excelRow({ message: 'ERROR', refs: skus, excelSLP, i }));
                         }
                     }
-                } else {
+                } else if (await noSearchHitOnProduct.isVisible()) {
                     if (mitigatedErrors && mitigatedInfo) {
                         offlineData.push({ url: '', snapshot: '', sku, plpPriceBlocks: [] });
                         result.push(excelRow({ message: `_error_;${mitigatedInfo.message}`, refs: skus, excelSLP, i }));
