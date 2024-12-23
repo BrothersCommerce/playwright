@@ -7,6 +7,15 @@ const __filename = fileURLToPath(import.meta.url);
 
 const _dirname = path.dirname(__filename);
 
+const setGlobalTimeout = ({ hours, minutes }: { hours?: number, minutes?: number }) => {
+  const msMinute = 1000 * 60;
+
+  if (minutes) return msMinute * minutes;
+  if (hours) return msMinute * 60 * hours;
+
+  return msMinute * 60;
+}
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -48,7 +57,7 @@ export default defineConfig({
     },
     video: 'retain-on-failure',
   },
-  timeout: 10800000,
+  timeout: setGlobalTimeout({ hours: 4 }),
   // expect: {
   //   timeout: 15000,
   // },
