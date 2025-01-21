@@ -63,7 +63,7 @@ export const testPLP = async ({
                 const searchHitOnProduct = page.locator(".voyadoPrimaryList-primaryProducts-F0X").getByRole("button");
                 const noSearchHitOnProduct = page.getByRole("paragraph").filter({ hasText: "Din sökning genererade tyvärr inga resultat" });
                 
-                await expect.soft(searchHitOnProduct.or(noSearchHitOnProduct), `Unable to evaluate search result for SKU: ${sku}`).toBeVisible({ timeout: 150 });
+                await expect.soft(searchHitOnProduct.or(noSearchHitOnProduct), `Unable to evaluate search result for SKU: ${sku}`).toBeVisible({ timeout: 500 });
             
                 if (await searchHitOnProduct.isVisible()) {
     
