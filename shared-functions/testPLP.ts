@@ -60,10 +60,10 @@ export const testPLP = async ({
                 result.push(excelRow({ message: `RNB?;SKU in unexpected format: ${sku}`, refs: skus, excelSLP, i }));
             } else {
                 
-                const searchHitOnProduct = page.locator(".voyadoPrimaryList-primaryProducts-F0X > .voyadoProduct-container--qK").first();
-                const noSearchHitOnProduct = page.locator(".voyadoSearchResults-noResults-mTm");
+                const searchHitOnProduct = page.locator(".voyadoPrimaryList-primaryProducts-F0X").getByRole("button");
+                const noSearchHitOnProduct = page.getByRole("paragraph").filter({ hasText: "Din sökning genererade tyvärr inga resultat" });
                 
-                await expect.soft(searchHitOnProduct.or(noSearchHitOnProduct)).toBeVisible({ timeout: 150 });
+                await expect.soft(searchHitOnProduct.or(noSearchHitOnProduct), `Unable to evaluate search result for SKU: ${sku}`).toBeVisible({ timeout: 150 });
             
                 if (await searchHitOnProduct.isVisible()) {
     
@@ -74,7 +74,6 @@ export const testPLP = async ({
     
                     await page.locator("section > div > .voyadoProduct-container--qK").first().click();
     
-                    // const mainContainer = page.locator(".main-page-hXb");
                     const productPage404 = await page.locator(".errorView-root-hPb");
                     const productPage = await page.locator(".productFullDetail-root-vAQ");
                     const magentoExplosion = await page.locator(".main-root_masked-vjm");
