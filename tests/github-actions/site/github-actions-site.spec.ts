@@ -11,6 +11,7 @@ import { testMagentoConnectedSkus } from "../../../shared-functions/testConencte
 import { setMagentoSlp } from "../../../shared-functions/setMagentoSlp";
 import { testMagentoStockQty } from "../../../shared-functions/testMagentoStockQty";
 import { testChildrenToNotHaveIdentifiers } from "../../../shared-functions/testForIdentifiers";
+import { testRelevance } from "../../../shared-functions/testRelevance";
 
 let skus: string[] = [];
 
@@ -65,6 +66,9 @@ test(`SKU status: ${testTarget}`, async () => {
 
     const connected = await testMagentoConnectedSkus({ resultConnectedSkus: status.resultConnectedSkus, testTarget, skus });
     excelRows.push({ label: connected.label, result: connected.result });
+
+    const relevance = await testRelevance({ resultRelevance: status.resultRelevance, testTarget, skus });
+    excelRows.push({ label: relevance.label, result: relevance.result });
 
     offlineProductPages = await setMagentoSlp({ result: status.resultMagentoSlp, offlineProductPages, testTarget, skus });
 });

@@ -93,6 +93,7 @@ test(`PDP regular price "${testTarget}"`, async () => {
 });
 
 test(`PDP Badges "${testTarget}"`, async () => {
+    test.skip(!process.env.TOP_RIGHT_BADGE, "No input for expected badge text. Skip test for top-right-badge.")
     const expectedBadges: ExpectedBadges = {
         topRight: process.env.TOP_RIGHT_BADGE
     };
