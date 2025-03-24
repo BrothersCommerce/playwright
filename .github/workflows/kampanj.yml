@@ -19,7 +19,7 @@ run-name: "Manuellt test: Kampanj - ${{ github.event.inputs.saleName }}"
 jobs:
   ange-kampanj-info:
     timeout-minutes: 3
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       actions: write
