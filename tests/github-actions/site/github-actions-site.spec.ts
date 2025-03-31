@@ -49,8 +49,7 @@ test.afterAll(async () => {
         console.log("INFO: No products to test.");
     }
 
-    await page.close();
-    }    
+    await page.close();    
 });
 
 test(`PLP`, async () => {
