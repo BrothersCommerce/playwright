@@ -1,7 +1,7 @@
 name: "CRON: alla SKUs i Magento"
 on:
   schedule:
-    - cron: '00 09 * * 1'
+    - cron: '30 11 * * 1'
 
 run-name: "CRON: All SKUs in Magneto (status=enabled, visibility=catalogAndSearch)"
 
